@@ -50,7 +50,7 @@ proguard/
 .idea/misc.xml
 .idea/modules.xml
 .idea/vcs.xml
-.idea/workspace.xml
 *.iml
 .idea/workspace.xml
-.idea/workspace.xml
+*workspace.xml
+**/.idea/workspace.xml
