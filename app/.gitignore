@@ -27,6 +27,9 @@ proguard/
 # Log Files
 *.log
 *.name
+.idea/
+**/.idea/
+.idea/*
 .idea/compiler.xml
 .idea/gradle.xml
 .idea/libraries/android_maps_utils_0_3_4.xml
@@ -51,7 +54,6 @@ proguard/
 .idea/misc.xml
 .idea/modules.xml
 .idea/vcs.xml
-*.iml
 .idea/workspace.xml
 *workspace.xml
 **/.idea/workspace.xml
