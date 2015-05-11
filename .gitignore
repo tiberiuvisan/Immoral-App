@@ -26,6 +26,9 @@ proguard/
 # Log Files
 *.log
 *.name
+.idea/
+**/.idea/
+.idea/*
 .idea/compiler.xml
 .idea/gradle.xml
 .idea/libraries/android_maps_utils_0_3_4.xml
