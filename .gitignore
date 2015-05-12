@@ -25,3 +25,30 @@ proguard/
 
 # Log Files
 *.log
+*.name
+.idea/compiler.xml
+.idea/gradle.xml
+.idea/libraries/android_maps_utils_0_3_4.xml
+.idea/libraries/play_services_7_3_0.xml
+.idea/libraries/android_maps_utils_0_3_4.xml
+.idea/libraries/appcompat_v7_22_0_0.xml
+.idea/libraries/play_services_7_3_0.xml
+.idea/libraries/play_services_ads_7_3_0.xml
+.idea/libraries/play_services_analytics_7_3_0.xml
+.idea/libraries/play_services_appinvite_7_3_0.xml
+.idea/libraries/play_services_appstate_7_3_0.xml
+.idea/libraries/play_services_appstate_7_3_0.xml
+.idea/libraries/play_services_base_7_3_0.xml
+.idea/libraries/play_services_cast_7_3_0.xml
+.idea/libraries/play_services_location_7_3_0.xml
+.idea/libraries/play_services_maps_7_3_0.xml
+.idea/libraries/play_services_panorama_7_3_0.xml
+.idea/libraries/play_services_wallet_7_3_0.xml
+.idea/libraries/play_services_wearable_7_3_0.xml
+.idea/libraries/support_annotations_22_0_0.xml
+.idea/libraries/support_v4_22_0_0.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+.idea/workspace.xml
+*.iml
