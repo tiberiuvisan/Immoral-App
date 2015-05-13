@@ -10,7 +10,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import ro.conceptapps.immoralapp.R;
-import ro.conceptapps.immoralapp.utils.SQLiteHelper;
+import ro.conceptapps.immoralapp.utils.UserDbHelper;
 
 
 public class LoginActivity extends ActionBarActivity {
@@ -75,7 +75,7 @@ public class LoginActivity extends ActionBarActivity {
             doAdminLogin();
         } else {*/
 
-        if (SQLiteHelper.checkLogin(LoginActivity.this, usernameEditText.getText().toString(), passwordEditText.getText().toString()) != -1) {
+        if (UserDbHelper.checkLogin(LoginActivity.this, usernameEditText.getText().toString(), passwordEditText.getText().toString()) != -1) {
             startActivity(new Intent(this, MainActivity.class));
             this.finish();
         } else {

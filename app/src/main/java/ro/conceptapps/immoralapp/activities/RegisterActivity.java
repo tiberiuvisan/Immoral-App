@@ -10,7 +10,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import ro.conceptapps.immoralapp.R;
-import ro.conceptapps.immoralapp.utils.SQLiteHelper;
+import ro.conceptapps.immoralapp.utils.UserDbHelper;
 
 /**
  * Created by Tiberiu Visan on 5/11/2015.
@@ -48,7 +48,7 @@ public class RegisterActivity extends ActionBarActivity {
     private void registerUser() {
         if (username.getText().toString().length() > 0 && password.getText().toString().length() > 0) {
 
-            SQLiteHelper.addUserToDatabase(this, username.getText().toString(), password.getText().toString());
+            UserDbHelper.addUserToDatabase(this, username.getText().toString(), password.getText().toString());
             Toast.makeText(this, "Utilizatorul a fost adaugat", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(this, "Nu ati completat toate campurile", Toast.LENGTH_SHORT).show();

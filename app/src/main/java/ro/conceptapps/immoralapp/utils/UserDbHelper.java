@@ -6,13 +6,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-public class SQLiteHelper extends SQLiteOpenHelper {
+public class UserDbHelper extends SQLiteOpenHelper {
 
-    private static SQLiteHelper mInstance;
+    private static UserDbHelper mInstance;
     private static SQLiteDatabase db;
 
     private static final int DATABASE_VERSION = 1;
-    private static final String DATABASE_NAME = "chestionar.db";
+    private static final String DATABASE_NAME = "user.db";
     private static final String TABLE_USERS = "table_users";
     private static final String TABLE_COL_ID = "table_col_id";
     private static final String TABLE_COL_USER = "table_col_user";
@@ -31,7 +31,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             + " );";
 
 
-    private SQLiteHelper(Context context) {
+    private UserDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
@@ -41,9 +41,9 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(DATABASE_CREATE);
     }
 
-    private static SQLiteHelper getInstance(Context context) {
+    private static UserDbHelper getInstance(Context context) {
         if (mInstance == null) {
-            mInstance = new SQLiteHelper(context);
+            mInstance = new UserDbHelper(context);
             db = mInstance.getWritableDatabase();
         }
         return mInstance;
