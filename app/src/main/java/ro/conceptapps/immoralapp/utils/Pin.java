@@ -9,8 +9,8 @@ public class Pin {
     public int userId;
     public String type;
     public String description;
-    public float lat;
-    public float lng;
+    public double lat;
+    public double lng;
 
 
     @Override

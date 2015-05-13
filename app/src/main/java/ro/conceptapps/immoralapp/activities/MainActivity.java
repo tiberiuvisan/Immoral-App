@@ -3,7 +3,6 @@ package ro.conceptapps.immoralapp.activities;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.Location;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
@@ -12,11 +11,16 @@ import android.util.Log;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.ArrayList;
 
 import ro.conceptapps.immoralapp.R;
 import ro.conceptapps.immoralapp.map.GPSLocation;
 import ro.conceptapps.immoralapp.map.MapUtils;
+import ro.conceptapps.immoralapp.utils.Pin;
+import ro.conceptapps.immoralapp.utils.PinDbHelper;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -26,6 +30,7 @@ public class MainActivity extends ActionBarActivity {
     private LatLng latLng;
     private SharedPreferences sp;
     private MapUtils mapUtils;
+    private ArrayList<Pin> markers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +40,8 @@ public class MainActivity extends ActionBarActivity {
 
         sp = getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
         setUpMapIfNeeded();
+        markers = PinDbHelper.getPinsFromDatabase(this);
+
     }
 
 
@@ -103,6 +110,23 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onMapLoaded() {
                 getLocation();
+                for(Pin marker : markers){
+                    mMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(marker.lat, marker.lng))
+                    .title(marker.type)
+                    .snippet(marker.description));
+                }
+            }
+        });
+
+        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+            @Override
+            public void onMapLongClick(LatLng latLng) {
+                Marker marker = mMap.addMarker(new MarkerOptions()
+                        .position(latLng)
+                        .draggable(true));
+                addMarkerToDatabase(latLng);
+
             }
         });
     }
@@ -120,5 +144,9 @@ public class MainActivity extends ActionBarActivity {
                 }
             }
         });
+    }
+
+    private void addMarkerToDatabase(LatLng latLng){
+        PinDbHelper.addPinToDatabase(this, 1, "ASfD", "asadfenad aisda", latLng.latitude, latLng.longitude);
     }
 }

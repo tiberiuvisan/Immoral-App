@@ -7,11 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.ArrayList;
-import java.util.List;
 
-/**
- * Created by andreea on 5/13/2015.
- */
+
 public class PinDbHelper extends SQLiteOpenHelper {
 
     private static PinDbHelper mInstance;
@@ -36,11 +33,11 @@ public class PinDbHelper extends SQLiteOpenHelper {
             + TABLE_COL_USER_ID
             + " INTEGER, "
             + TABLE_COL_TYPE
-            + " TEXT"
+            + " TEXT, "
             + TABLE_COL_DESCRIPTION
-            + " TEXT"
+            + " TEXT, "
             + TABLE_COL_LATITUDE
-            + " REAL"
+            + " REAL, "
             + TABLE_COL_LONGITUDE
             + " REAL"
             + " );";
@@ -77,7 +74,7 @@ public class PinDbHelper extends SQLiteOpenHelper {
         return id;
     }
 
-    public static void addPinToDatabase(Context context,int userId, String type, String description, float lat, float lng ) {
+    public static void addPinToDatabase(Context context,int userId, String type, String description, double lat, double lng ) {
         getInstance(context);
         ContentValues values = new ContentValues();
         values.put(TABLE_COL_PIN_ID, getLastID(context));
@@ -106,6 +103,7 @@ public class PinDbHelper extends SQLiteOpenHelper {
             pins.add(pin);
             cursor.moveToNext();
         }
+        cursor.close();
 
         return pins;
     }
@@ -127,6 +125,7 @@ public class PinDbHelper extends SQLiteOpenHelper {
             pins.add(pin);
             cursor.moveToNext();
         }
+        cursor.close();
 
         return pins;
     }
