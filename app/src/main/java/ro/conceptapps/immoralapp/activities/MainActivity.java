@@ -1,9 +1,13 @@
 package ro.conceptapps.immoralapp.activities;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.location.Location;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -11,17 +15,25 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import ro.conceptapps.immoralapp.R;
+import ro.conceptapps.immoralapp.map.GPSLocation;
+import ro.conceptapps.immoralapp.map.MapUtils;
 
 public class MainActivity extends ActionBarActivity {
 
+    private static final String TAG = "MapActivity";
     private Toolbar toolbar;
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
+    private LatLng latLng;
+    private SharedPreferences sp;
+    private MapUtils mapUtils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setToolbar();
+
+        sp = getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
         setUpMapIfNeeded();
     }
 
@@ -34,8 +46,19 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     protected void onResume() {
+        //in momentul in care se revine in activitate, un nou set de coordonate este creeat din
+        //ultimele valori puse. Astfel, utilizatorul nu va fi trimis niciodata pe coordonate (0,0)
+        latLng = new LatLng(sp.getFloat("SHARED_LAT", 0), sp.getFloat("SHARED_LNG", 0));
         super.onResume();
         setUpMapIfNeeded();
+    }
+
+    @Override
+    protected void onPause() {
+        //in momentul in care activitatea este oprita, se salveaza ultima locatie in SharedPreferences;
+        sp.edit().putFloat("SHARED_LAT", (float) latLng.latitude).apply();
+        sp.edit().putFloat("SHARED_LNG", (float) latLng.latitude).apply();
+        super.onPause();
     }
 
     /**
@@ -59,6 +82,7 @@ public class MainActivity extends ActionBarActivity {
             // Try to obtain the map from the SupportMapFragment.
             mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
                     .getMap();
+            mapUtils = new MapUtils(this, mMap);
             // Check if we were successful in obtaining the map.
             if (mMap != null) {
                 setUpMap();
@@ -73,6 +97,28 @@ public class MainActivity extends ActionBarActivity {
      * This should only be called once and when we are sure that {@link #mMap} is not null.
      */
     private void setUpMap() {
-        mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
+        mapUtils.setUpMap();
+        // mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
+        mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+            @Override
+            public void onMapLoaded() {
+                getLocation();
+            }
+        });
+    }
+
+    private void getLocation() {
+        Log.d(TAG, "in get Location");
+        new GPSLocation(this, new GPSLocation.LocationResult() {
+            @Override
+            public void gotLocation(Location location) {
+                if (location != null) {
+                    latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                    mapUtils.zoomToLocation(latLng, 15);
+                    Log.d(TAG, "in get Location");
+                    //GPSLocation.getLastInstance().disconnect();
+                }
+            }
+        });
     }
 }
