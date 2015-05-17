@@ -11,8 +11,6 @@ import android.util.Log;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 
@@ -65,6 +63,7 @@ public class MainActivity extends ActionBarActivity {
         //in momentul in care activitatea este oprita, se salveaza ultima locatie in SharedPreferences;
         sp.edit().putFloat("SHARED_LAT", (float) latLng.latitude).apply();
         sp.edit().putFloat("SHARED_LNG", (float) latLng.latitude).apply();
+        GPSLocation.getLastInstance().disconnect();
         super.onPause();
     }
 
@@ -105,26 +104,37 @@ public class MainActivity extends ActionBarActivity {
      */
     private void setUpMap() {
         mapUtils.setUpMap();
-        // mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
         mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
             @Override
             public void onMapLoaded() {
+                LatLng centru = new LatLng(45.40, 25.10);
+                mapUtils.setCenter(centru);
                 getLocation();
-                for(Pin marker : markers){
-                    mMap.addMarker(new MarkerOptions()
+                for (Pin marker : markers) {
+                    mapUtils.addToCluster(marker);
+                   /* mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(marker.lat, marker.lng))
                     .title(marker.type)
-                    .snippet(marker.description));
+                    .snippet(marker.description));*/
+                    mapUtils.recluster();
                 }
+                mapUtils.recluster();
             }
         });
 
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(LatLng latLng) {
-                Marker marker = mMap.addMarker(new MarkerOptions()
-                        .position(latLng)
-                        .draggable(true));
+                Pin pin = new Pin();
+                pin.lat = latLng.latitude;
+                pin.lng = latLng.longitude;
+                pin.description = "ASDF";
+                pin.type = "1";
+                pin.userId = 1;
+
+                mapUtils.addToCluster(pin);
+                mapUtils.recluster();
+
                 addMarkerToDatabase(latLng);
 
             }
@@ -146,7 +156,7 @@ public class MainActivity extends ActionBarActivity {
         });
     }
 
-    private void addMarkerToDatabase(LatLng latLng){
+    private void addMarkerToDatabase(LatLng latLng) {
         PinDbHelper.addPinToDatabase(this, 1, "ASfD", "asadfenad aisda", latLng.latitude, latLng.longitude);
     }
 }
