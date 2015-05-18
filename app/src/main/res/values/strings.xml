@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">ImmoralApp</string>
     <string name="title_activity_main">Map</string>
+    <string name="action_search">Cautare</string>
+    <string name="distance_km">%1$.1f Km</string>
+    <string name="distance_m">%1$.1f m</string>
 </resources>

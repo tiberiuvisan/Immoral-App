@@ -5,9 +5,6 @@ import com.google.maps.android.clustering.ClusterItem;
 
 import java.io.Serializable;
 
-/**
- * Created by andreea on 5/13/2015.
- */
 public class Pin implements Serializable, ClusterItem {
 
     public int id;

@@ -1,28 +1,41 @@
 package ro.conceptapps.immoralapp.activities;
 
+import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 
 import ro.conceptapps.immoralapp.R;
 import ro.conceptapps.immoralapp.map.GPSLocation;
 import ro.conceptapps.immoralapp.map.MapUtils;
+import ro.conceptapps.immoralapp.utils.Constants;
 import ro.conceptapps.immoralapp.utils.Pin;
 import ro.conceptapps.immoralapp.utils.PinDbHelper;
 
 public class MainActivity extends ActionBarActivity {
 
     private static final String TAG = "MapActivity";
+    private static final long DELAY_TIME = 5 * 1000;
     private Toolbar toolbar;
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private LatLng latLng;
@@ -30,16 +43,16 @@ public class MainActivity extends ActionBarActivity {
     private MapUtils mapUtils;
     private ArrayList<Pin> markers;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setToolbar();
-
-        sp = getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE);
+        sp = getSharedPreferences(Constants.SHARED_PREFS, Context.MODE_PRIVATE);
         setUpMapIfNeeded();
         markers = PinDbHelper.getPinsFromDatabase(this);
-
+        handleIntent(getIntent());
     }
 
 
@@ -53,16 +66,15 @@ public class MainActivity extends ActionBarActivity {
     protected void onResume() {
         //in momentul in care se revine in activitate, un nou set de coordonate este creeat din
         //ultimele valori puse. Astfel, utilizatorul nu va fi trimis niciodata pe coordonate (0,0)
-        latLng = new LatLng(sp.getFloat("SHARED_LAT", 0), sp.getFloat("SHARED_LNG", 0));
+        latLng = new LatLng(sp.getFloat(Constants.SHARED_PREFS_LASTLAT, 0), sp.getFloat(Constants.SHARED_PREFS_LASTLNG, 0));
         super.onResume();
-        setUpMapIfNeeded();
     }
 
     @Override
     protected void onPause() {
         //in momentul in care activitatea este oprita, se salveaza ultima locatie in SharedPreferences;
-        sp.edit().putFloat("SHARED_LAT", (float) latLng.latitude).apply();
-        sp.edit().putFloat("SHARED_LNG", (float) latLng.latitude).apply();
+        sp.edit().putFloat(Constants.SHARED_PREFS_LASTLAT, (float) latLng.latitude).apply();
+        sp.edit().putFloat(Constants.SHARED_PREFS_LASTLNG, (float) latLng.latitude).apply();
         GPSLocation.getLastInstance().disconnect();
         super.onPause();
     }
@@ -112,10 +124,6 @@ public class MainActivity extends ActionBarActivity {
                 getLocation();
                 for (Pin marker : markers) {
                     mapUtils.addToCluster(marker);
-                   /* mMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(marker.lat, marker.lng))
-                    .title(marker.type)
-                    .snippet(marker.description));*/
                     mapUtils.recluster();
                 }
                 mapUtils.recluster();
@@ -158,5 +166,71 @@ public class MainActivity extends ActionBarActivity {
 
     private void addMarkerToDatabase(LatLng latLng) {
         PinDbHelper.addPinToDatabase(this, 1, "ASfD", "asadfenad aisda", latLng.latitude, latLng.longitude);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        final MenuItem searchMenuItem = menu.findItem(R.id.action_search);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchMenuItem);
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean queryTextFocused) {
+                if (!queryTextFocused) {
+                    searchView.onActionViewCollapsed();
+                    searchView.setQuery("", false);
+                }
+            }
+        });
+        return true;
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        handleIntent(intent);
+    }
+
+    private void handleIntent(Intent intent) {
+        Log.d(TAG, "in handle intent");
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            Log.d(TAG, query);
+            final Intent i = new Intent(this, SearchActivity.class);
+            i.putExtra(Constants.SEARCH_TEXT, query);
+            startActivityForResult(i, 100);
+            Log.d(TAG, "in handle intent startActivity");
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (resultCode == RESULT_OK) {
+            Log.d(TAG, data.toString());
+            double returnLatitude = data.getDoubleExtra("returnLatitude", 0);
+            double returnLongitude = data.getDoubleExtra("returnLongitude", 0);
+            Marker marker = mMap.addMarker(new MarkerOptions().draggable(true)
+            .position(new LatLng(returnLatitude,returnLongitude)));
+            marker.setSnippet("Navigheaza pana la aceasta pozitie");
+            marker.setTitle("NAVIGARE");
+            Log.d(TAG, "Position on return: " + new LatLng(returnLatitude, returnLongitude));
+
+            if (requestCode == 100) {
+                double returnLatNE = data.getDoubleExtra("returnLatNE", 0);
+                double returnLngNE = data.getDoubleExtra("returnLngNE", 0);
+                double returnLatSV = data.getDoubleExtra("returnLatSV", 0);
+                double returnLngSV = data.getDoubleExtra("returnLngSV", 0);
+                if (returnLatNE == returnLatSV && returnLngNE == returnLngSV)
+                    mapUtils.zoomToLocation(new LatLng(returnLatitude, returnLongitude), 15);
+                else
+                    mapUtils.zoomToBoundingBox(
+                            new LatLngBounds(new LatLng(returnLatSV, returnLngSV),
+                                    new LatLng(returnLatNE, returnLngNE)));
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

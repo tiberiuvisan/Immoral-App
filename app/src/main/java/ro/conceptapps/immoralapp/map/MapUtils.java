@@ -2,21 +2,20 @@ package ro.conceptapps.immoralapp.map;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.location.Location;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.algo.GridBasedAlgorithm;
 
 import ro.conceptapps.immoralapp.utils.Pin;
 
-/**
- * Created by Tiberiu Visan on 5/12/2015.
- * Project: Immoral-App
- */
 public class MapUtils {
 
 
@@ -53,12 +52,6 @@ public class MapUtils {
         mClusterManager.setRenderer(new PinRenderer(ctx, map, mClusterManager));
         map.getUiSettings().setMyLocationButtonEnabled(false);
         map.getUiSettings().setMapToolbarEnabled(false);
-        map.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
-            @Override
-            public void onMapLoaded() {
-
-            }
-        });
         map.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
             @Override
             public void onCameraChange(CameraPosition cameraPosition) {
@@ -102,4 +95,15 @@ public class MapUtils {
         mClusterManager.cluster();
     }
 
+    public static float distanceBetween(LatLng from, LatLng to) {
+        float result[] = new float[2];
+        Location.distanceBetween(from.latitude, from.longitude, to.latitude, to.longitude, result);
+        return result[0];
+    }
+
+    public void zoomToBoundingBox(LatLngBounds latLngBounds) {
+        int padding = 0; // offset from edges of the map in pixels
+        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(latLngBounds, padding);
+        map.animateCamera(cu);
+    }
 }

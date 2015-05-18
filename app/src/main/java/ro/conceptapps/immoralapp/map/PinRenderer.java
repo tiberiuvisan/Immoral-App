@@ -9,9 +9,6 @@ import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 
 import ro.conceptapps.immoralapp.utils.Pin;
 
-/**
- * Created by andreea on 5/14/2015.
- */
 public class PinRenderer extends DefaultClusterRenderer<Pin> {
 
     Context context;

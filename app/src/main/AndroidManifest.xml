@@ -28,7 +28,16 @@
 
         <activity
             android:name=".activities.MainActivity"
-            android:label="Harta" />
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="Harta"
+            android:launchMode="singleInstance">
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+        </activity>
         <activity
             android:name="ro.conceptapps.immoralapp.activities.LoginActivity"
             android:label="Immoral App">
@@ -40,6 +49,9 @@
         <activity
             android:name=".activities.RegisterActivity"
             android:label="Inregistrare" />
+        <activity
+            android:name=".activities.SearchActivity"
+            android:label="Cautare" />
     </application>
 
 </manifest>

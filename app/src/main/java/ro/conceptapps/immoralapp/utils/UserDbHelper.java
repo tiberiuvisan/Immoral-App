@@ -28,7 +28,7 @@ public class UserDbHelper extends SQLiteOpenHelper {
             + TABLE_COL_USER
             + " TEXT, "
             + TABLE_COL_PASSWORD
-            + " TEXT"
+            + " TEXT, "
             + TABLE_COL_PHONENUMBER
             + " TEXT"
             + " );";
