@@ -19,6 +19,7 @@ import ro.conceptapps.immoralapp.utils.UserDbHelper;
 public class RegisterActivity extends ActionBarActivity {
     EditText username;
     EditText password;
+    EditText phoneNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +31,7 @@ public class RegisterActivity extends ActionBarActivity {
     private void initUI() {
         username = (EditText) findViewById(R.id.user);
         password = (EditText) findViewById(R.id.password);
+        phoneNumber = (EditText) findViewById(R.id.phoneNumber);
         final Button register = (Button) findViewById(R.id.register);
 
         register.setOnClickListener(new View.OnClickListener() {

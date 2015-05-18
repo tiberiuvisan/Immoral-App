@@ -17,7 +17,8 @@ public class UserDbHelper extends SQLiteOpenHelper {
     private static final String TABLE_COL_ID = "table_col_id";
     private static final String TABLE_COL_USER = "table_col_user";
     private static final String TABLE_COL_PASSWORD = "table_col_pass";
-    private static final String[] TABLE_ALL_COLS_USERS = {TABLE_COL_ID, TABLE_COL_USER, TABLE_COL_PASSWORD};
+    private static final String TABLE_COL_PHONENUMBER = "table_col_phone";
+    private static final String[] TABLE_ALL_COLS_USERS = {TABLE_COL_ID, TABLE_COL_USER, TABLE_COL_PASSWORD, TABLE_COL_PHONENUMBER};
     private static final String DATABASE_CREATE = ""
             + "CREATE TABLE "
             + TABLE_USERS
@@ -27,6 +28,8 @@ public class UserDbHelper extends SQLiteOpenHelper {
             + TABLE_COL_USER
             + " TEXT, "
             + TABLE_COL_PASSWORD
+            + " TEXT"
+            + TABLE_COL_PHONENUMBER
             + " TEXT"
             + " );";
 
@@ -62,12 +65,13 @@ public class UserDbHelper extends SQLiteOpenHelper {
         return id;
     }
 
-    public static void addUserToDatabase(Context context, String user, String password) {
+    public static void addUserToDatabase(Context context, String user, String password, String phoneNumber) {
         getInstance(context);
         ContentValues values = new ContentValues();
         values.put(TABLE_COL_ID, getLastID(context));
         values.put(TABLE_COL_USER, user);
         values.put(TABLE_COL_PASSWORD, password);
+        values.put(TABLE_COL_PHONENUMBER, phoneNumber);
         db.insert(TABLE_USERS, null, values);
     }
 
