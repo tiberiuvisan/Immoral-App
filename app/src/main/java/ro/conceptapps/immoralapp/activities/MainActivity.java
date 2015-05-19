@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
@@ -29,6 +28,7 @@ import ro.conceptapps.immoralapp.R;
 import ro.conceptapps.immoralapp.map.GPSLocation;
 import ro.conceptapps.immoralapp.map.MapUtils;
 import ro.conceptapps.immoralapp.utils.Constants;
+import ro.conceptapps.immoralapp.utils.DialogBuilder;
 import ro.conceptapps.immoralapp.utils.Pin;
 import ro.conceptapps.immoralapp.utils.PinDbHelper;
 
@@ -165,7 +165,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void addMarkerToDatabase(LatLng latLng) {
-        PinDbHelper.addPinToDatabase(this, 1, "ASfD", "asadfenad aisda", latLng.latitude, latLng.longitude);
+        DialogBuilder.addPinPopup(this, latLng);
     }
 
     @Override

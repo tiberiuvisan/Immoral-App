@@ -4,4 +4,16 @@
     <string name="action_search">Cautare</string>
     <string name="distance_km">%1$.1f Km</string>
     <string name="distance_m">%1$.1f m</string>
+
+    <string-array name="type">
+        <item>Cazuri:</item>
+        <item>Violenta verbala</item>
+-       <item>O vanzatoare cu un comportamnet inadecvat</item>
+-       <item>Gesturi inadecvate</item>
+-       <item>Oameni care nu isi curata strada</item>
+-       <item>Parcaragii</item>
+-       <item>Consum droguri</item>
+-       <item>Publicitate sexuala</item>
+-       <item>Stapan cu caini fara botnita</item>
+    </string-array>
 </resources>

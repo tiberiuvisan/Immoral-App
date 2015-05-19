@@ -1,11 +1,11 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
     </style>
     <!-- toolbar style -->
-    <style name="myAppTheme" parent="Theme.AppCompat">
+    <style name="myAppTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="colorPrimary">@color/action_bar_color</item>
         <item name="colorPrimaryDark">@color/dark_blue</item>
         <item name="android:windowNoTitle">true</item>
