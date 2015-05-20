@@ -14,6 +14,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -166,12 +167,12 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void addMarker(final LatLng latLng) {
-        AlertDialogWrapper.Builder adb = new AlertDialogWrapper.Builder(this);
+        AlertDialogWrapper.Builder adb = new AlertDialogWrapper.Builder(new ContextThemeWrapper(this, R.style.Theme_AppCompat_Light_Dialog));
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.popup_add_pin, null);
 
-        final Spinner type = (Spinner)view.findViewById(R.id.type);
-        final TextView desc = (TextView)view.findViewById(R.id.description);
+        final Spinner type = (Spinner) view.findViewById(R.id.type);
+        final TextView desc = (TextView) view.findViewById(R.id.description);
         final Pin pin = new Pin();
 
         ArrayList<String> typeList = new ArrayList<>();
@@ -181,7 +182,7 @@ public class MainActivity extends ActionBarActivity {
         }
         ArrayAdapter<String> data = new ArrayAdapter<String>(this, R.layout.spinner_item,
                 typeList);
-        data.setDropDownViewResource(R.layout.spinner_item);
+        data.setDropDownViewResource(R.layout.spinner_dropdown_item);
         type.setAdapter(data);
         type.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
@@ -204,7 +205,7 @@ public class MainActivity extends ActionBarActivity {
                     @Override
                     public void onClick(final DialogInterface dialog, int which) {
                         activityDesc = desc.getText().toString();
-                        Log.d(TAG,activityDesc);
+                        Log.d(TAG, activityDesc);
                         Log.d(TAG, desc.getText().toString());
                         PinDbHelper.addPinToDatabase(MainActivity.this, 1, activityType, activityDesc, latLng.latitude, latLng.longitude);
                         pin.lat = latLng.latitude;
@@ -274,7 +275,7 @@ public class MainActivity extends ActionBarActivity {
             double returnLatitude = data.getDoubleExtra("returnLatitude", 0);
             double returnLongitude = data.getDoubleExtra("returnLongitude", 0);
             Marker marker = mMap.addMarker(new MarkerOptions().draggable(true)
-            .position(new LatLng(returnLatitude,returnLongitude)));
+                    .position(new LatLng(returnLatitude, returnLongitude)));
             marker.setSnippet("Navigheaza pana la aceasta pozitie");
             marker.setTitle("NAVIGARE");
             Log.d(TAG, "Position on return: " + new LatLng(returnLatitude, returnLongitude));

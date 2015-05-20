@@ -6,4 +6,4 @@
     android:paddingRight="7dp"
     android:paddingTop="7dp"
     android:textColor="#000"
-    android:background="@android:color/white"/>
+    />
