@@ -1,9 +1,18 @@
 package ro.conceptapps.immoralapp.map;
 
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.location.Location;
+import android.text.util.Linkify;
+import android.view.ContextThemeWrapper;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TextView;
 
+import com.afollestad.materialdialogs.AlertDialogWrapper;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -14,7 +23,9 @@ import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.algo.GridBasedAlgorithm;
 
+import ro.conceptapps.immoralapp.R;
 import ro.conceptapps.immoralapp.utils.Pin;
+import ro.conceptapps.immoralapp.utils.UserDbHelper;
 
 public class MapUtils {
 
@@ -62,6 +73,13 @@ public class MapUtils {
 
         map.setOnInfoWindowClickListener(mClusterManager);
 
+        mClusterManager.setOnClusterItemInfoWindowClickListener(new ClusterManager.OnClusterItemInfoWindowClickListener<Pin>() {
+            @Override
+            public void onClusterItemInfoWindowClick(Pin pin) {
+
+            }
+        });
+
         map.setOnMarkerClickListener(mClusterManager);
 
         // mClusterManager.setOnClusterItemClickListener();
@@ -82,6 +100,37 @@ public class MapUtils {
         mClusterManager.setAlgorithm(new GridBasedAlgorithm<Pin>());
     }
 
+    public void infoDialog(Pin pin){
+        AlertDialogWrapper.Builder adb = new AlertDialogWrapper.Builder(new ContextThemeWrapper(ctx, R.style.Theme_AppCompat_Light_Dialog));
+        LayoutInflater inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.popup_infowindow, null);
+
+        final TextView user = (TextView) view.findViewById(R.id.user);
+        final TextView desc = (TextView) view.findViewById(R.id.description);
+        final TextView phone = (TextView) view.findViewById(R.id.phone);
+
+        user.setText(UserDbHelper.getUserName(ctx,pin.userId));
+        desc.setText(pin.description);
+        phone.setText(UserDbHelper.getPhone(ctx,pin.userId));
+        Linkify.addLinks(phone, Linkify.ALL);
+
+        adb.setTitle(pin.type)
+                .autoDismiss(false)
+                .setCancelable(false)
+                .setNegativeButton("Inchide", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        Dialog d = adb.create();
+        d.findViewById(R.id.titleFrame).setBackgroundColor(ctx.getResources().getColor(R.color.dark_blue));
+        ((TextView) d.findViewById(R.id.title)).setTextColor(Color.WHITE);
+        d.show();
+
+
+
+    }
 
     public void addToCluster(Pin p) {
         mClusterManager.addItem(p);

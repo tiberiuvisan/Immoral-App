@@ -1,12 +1,10 @@
 package ro.conceptapps.immoralapp.activities;
 
-import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
@@ -40,6 +38,7 @@ import ro.conceptapps.immoralapp.map.MapUtils;
 import ro.conceptapps.immoralapp.utils.Constants;
 import ro.conceptapps.immoralapp.utils.Pin;
 import ro.conceptapps.immoralapp.utils.PinDbHelper;
+import ro.conceptapps.immoralapp.utils.SessionManager;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -84,7 +83,7 @@ public class MainActivity extends ActionBarActivity {
     protected void onPause() {
         //in momentul in care activitatea este oprita, se salveaza ultima locatie in SharedPreferences;
         sp.edit().putFloat(Constants.SHARED_PREFS_LASTLAT, (float) latLng.latitude).apply();
-        sp.edit().putFloat(Constants.SHARED_PREFS_LASTLNG, (float) latLng.latitude).apply();
+        sp.edit().putFloat(Constants.SHARED_PREFS_LASTLNG, (float) latLng.longitude).apply();
         GPSLocation.getLastInstance().disconnect();
         super.onPause();
     }
@@ -207,12 +206,12 @@ public class MainActivity extends ActionBarActivity {
                         activityDesc = desc.getText().toString();
                         Log.d(TAG, activityDesc);
                         Log.d(TAG, desc.getText().toString());
-                        PinDbHelper.addPinToDatabase(MainActivity.this, 1, activityType, activityDesc, latLng.latitude, latLng.longitude);
+                        PinDbHelper.addPinToDatabase(MainActivity.this, SessionManager.getInstance().getId(), activityType, activityDesc, latLng.latitude, latLng.longitude);
                         pin.lat = latLng.latitude;
                         pin.lng = latLng.longitude;
                         pin.description = activityDesc;
                         pin.type = activityType;
-                        pin.userId = 1;
+                        pin.userId = SessionManager.getInstance().getId();
                         mapUtils.addToCluster(pin);
                         mapUtils.recluster();
                         dialog.dismiss();
@@ -223,10 +222,6 @@ public class MainActivity extends ActionBarActivity {
                 dialog.dismiss();
             }
         });
-        Dialog d = adb.create();
-        d.findViewById(R.id.titleFrame).setBackgroundColor(this.getResources().getColor(R.color.dark_blue));
-        ((TextView) d.findViewById(R.id.title)).setTextColor(Color.WHITE);
-        d.show();
 
     }
 

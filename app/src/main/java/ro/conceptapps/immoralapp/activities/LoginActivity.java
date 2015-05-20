@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import ro.conceptapps.immoralapp.R;
+import ro.conceptapps.immoralapp.utils.SessionManager;
 import ro.conceptapps.immoralapp.utils.UserDbHelper;
 
 
@@ -19,7 +20,6 @@ public class LoginActivity extends ActionBarActivity {
     private EditText passwordEditText;
     private Button loginButton;
     private Button registerButton;
-    private Button skipButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,11 +41,15 @@ public class LoginActivity extends ActionBarActivity {
         passwordEditText = (EditText) findViewById(R.id.password);
         loginButton = (Button) findViewById(R.id.btn_login);
         registerButton = (Button) findViewById(R.id.btn_register);
-        skipButton = (Button) findViewById(R.id.btn_skip);
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                doLogin();
+                if(!SessionManager.getInstance().isLoggedIn())
+                    doLogin();
+                else {
+                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                    finish();
+                }
             }
         });
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -59,13 +63,6 @@ public class LoginActivity extends ActionBarActivity {
             }
         });
 
-        skipButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(LoginActivity.this, MainActivity.class);
-                startActivity(i);
-            }
-        });
     }
 
 
@@ -76,6 +73,8 @@ public class LoginActivity extends ActionBarActivity {
         } else {*/
 
         if (UserDbHelper.checkLogin(LoginActivity.this, usernameEditText.getText().toString(), passwordEditText.getText().toString()) != -1) {
+            SessionManager.getInstance().saveId(UserDbHelper.getId(LoginActivity.this,usernameEditText.getText().toString()));
+            SessionManager.getInstance().saveLoggedIn(true);
             startActivity(new Intent(this, MainActivity.class));
             this.finish();
         } else {

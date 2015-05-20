@@ -10,6 +10,7 @@ public class UserDbHelper extends SQLiteOpenHelper {
 
     private static UserDbHelper mInstance;
     private static SQLiteDatabase db;
+    private static String TAG = "UserDbHelper";
 
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "user.db";
@@ -91,6 +92,42 @@ public class UserDbHelper extends SQLiteOpenHelper {
         }
         cursor.close();
         return isLoginCorrect;
+    }
+
+    public static int getId(Context context, String user){
+        getInstance(context);
+        int id=-1;
+        Cursor cursor = db.query(TABLE_USERS,TABLE_ALL_COLS_USERS,TABLE_COL_USER+"='"+user+"'",null,null,null,null);
+        while (!cursor.isAfterLast()){
+            id = cursor.getInt(0);
+            cursor.moveToNext();
+        }
+        cursor.close();
+        return id;
+    }
+
+    public static String getUserName(Context context, int id){
+        getInstance(context);
+        String userName="";
+        Cursor cursor = db.query(TABLE_USERS,TABLE_ALL_COLS_USERS,TABLE_COL_ID + " = '" + id + "'",null,null,null,null);
+        while (!cursor.isAfterLast()){
+            userName = cursor.getString(1);
+            cursor.moveToNext();
+        }
+        cursor.close();
+        return userName;
+    }
+
+    public static String getPhone(Context context, int userId){
+        getInstance(context);
+        String phone="";
+        Cursor cursor = db.query(TABLE_USERS, TABLE_ALL_COLS_USERS,TABLE_COL_ID + " = '"+userId+"'",null,null,null,null);
+        while(!cursor.isAfterLast()){
+            phone = cursor.getString(3);
+            cursor.moveToNext();
+        }
+        cursor.close();
+        return phone;
     }
 
     public static void deleteUser(Context context, String user) {
