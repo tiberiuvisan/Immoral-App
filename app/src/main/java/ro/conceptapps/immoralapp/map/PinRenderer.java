@@ -21,7 +21,7 @@ public class PinRenderer extends DefaultClusterRenderer<Pin> {
     @Override
     protected void onBeforeClusterItemRendered(Pin item, MarkerOptions markerOptions) {
         super.onBeforeClusterItemRendered(item, markerOptions);
-        markerOptions.title("Comportament Imoral");
+        markerOptions.title(item.type);
         markerOptions.snippet(item.description);
         markerOptions.draggable(false);
     }

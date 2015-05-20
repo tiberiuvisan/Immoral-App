@@ -5,11 +5,14 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.util.ArrayList;
 
 
 public class PinDbHelper extends SQLiteOpenHelper {
+
+    private static final String TAG = "PinDbHelper";
 
     private static PinDbHelper mInstance;
     private static SQLiteDatabase db;
@@ -84,6 +87,7 @@ public class PinDbHelper extends SQLiteOpenHelper {
         values.put(TABLE_COL_LATITUDE, lat);
         values.put(TABLE_COL_LONGITUDE, lng);
         db.insert(TABLE_PINS, null, values);
+        Log.d(TAG, values.toString());
     }
 
     public static ArrayList<Pin> getPinsFromDatabase(Context context){

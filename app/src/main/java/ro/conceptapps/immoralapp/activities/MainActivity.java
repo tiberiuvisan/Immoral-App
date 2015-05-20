@@ -1,9 +1,12 @@
 package ro.conceptapps.immoralapp.activities;
 
+import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
@@ -11,10 +14,16 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+import android.widget.TextView;
 
+import com.afollestad.materialdialogs.AlertDialogWrapper;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -28,7 +37,6 @@ import ro.conceptapps.immoralapp.R;
 import ro.conceptapps.immoralapp.map.GPSLocation;
 import ro.conceptapps.immoralapp.map.MapUtils;
 import ro.conceptapps.immoralapp.utils.Constants;
-import ro.conceptapps.immoralapp.utils.DialogBuilder;
 import ro.conceptapps.immoralapp.utils.Pin;
 import ro.conceptapps.immoralapp.utils.PinDbHelper;
 
@@ -42,6 +50,7 @@ public class MainActivity extends ActionBarActivity {
     private SharedPreferences sp;
     private MapUtils mapUtils;
     private ArrayList<Pin> markers;
+    private static String activityType, activityDesc;
 
 
     @Override
@@ -133,17 +142,9 @@ public class MainActivity extends ActionBarActivity {
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(LatLng latLng) {
-                Pin pin = new Pin();
-                pin.lat = latLng.latitude;
-                pin.lng = latLng.longitude;
-                pin.description = "ASDF";
-                pin.type = "1";
-                pin.userId = 1;
 
-                mapUtils.addToCluster(pin);
-                mapUtils.recluster();
 
-                addMarkerToDatabase(latLng);
+                addMarker(latLng);
 
             }
         });
@@ -164,8 +165,68 @@ public class MainActivity extends ActionBarActivity {
         });
     }
 
-    private void addMarkerToDatabase(LatLng latLng) {
-        DialogBuilder.addPinPopup(this, latLng);
+    private void addMarker(final LatLng latLng) {
+        AlertDialogWrapper.Builder adb = new AlertDialogWrapper.Builder(this);
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.popup_add_pin, null);
+
+        final Spinner type = (Spinner)view.findViewById(R.id.type);
+        final TextView desc = (TextView)view.findViewById(R.id.description);
+        final Pin pin = new Pin();
+
+        ArrayList<String> typeList = new ArrayList<>();
+        String immoralActivities[] = this.getResources().getStringArray(R.array.type);
+        for (int i = 0; i < immoralActivities.length; i++) {
+            typeList.add(immoralActivities[i]);
+        }
+        ArrayAdapter<String> data = new ArrayAdapter<String>(this, R.layout.spinner_item,
+                typeList);
+        data.setDropDownViewResource(R.layout.spinner_item);
+        type.setAdapter(data);
+        type.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                activityType = (String) type.getSelectedItem();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        adb.setView(view)
+                .autoDismiss(false)
+                .setCancelable(false)
+                .setTitle("Adauga pin")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(final DialogInterface dialog, int which) {
+                        activityDesc = desc.getText().toString();
+                        Log.d(TAG,activityDesc);
+                        Log.d(TAG, desc.getText().toString());
+                        PinDbHelper.addPinToDatabase(MainActivity.this, 1, activityType, activityDesc, latLng.latitude, latLng.longitude);
+                        pin.lat = latLng.latitude;
+                        pin.lng = latLng.longitude;
+                        pin.description = activityDesc;
+                        pin.type = activityType;
+                        pin.userId = 1;
+                        mapUtils.addToCluster(pin);
+                        mapUtils.recluster();
+                        dialog.dismiss();
+                    }
+                }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        Dialog d = adb.create();
+        d.findViewById(R.id.titleFrame).setBackgroundColor(this.getResources().getColor(R.color.dark_blue));
+        ((TextView) d.findViewById(R.id.title)).setTextColor(Color.WHITE);
+        d.show();
+
     }
 
     @Override
