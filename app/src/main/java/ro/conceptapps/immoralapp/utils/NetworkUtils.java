@@ -10,6 +10,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.maps.model.LatLng;
+
+import org.json.JSONException;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -57,7 +60,37 @@ public class NetworkUtils {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                Intent i = new Intent(Constants.ADD_PLACES_OPERATION);
+                i.putExtra("error", true);
+                ctx.sendBroadcast(i);
+            }
+        });
+        requestQueue.add(request);
+    }
 
+    public void getDirections(LatLng from, LatLng to) {
+        StringRequest request = new StringRequest(Request.Method.GET, buildLocationPath(from, to)
+                , new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "get Direction response : " + response);
+                Intent i = new Intent(Constants.ADD_DIRECTIONS_OPERATION);
+                try {
+                    Data.polylines = JSONParser.parseDirections(response);
+                    i.putExtra("error", false);
+                    ctx.sendBroadcast(i);
+                } catch (JSONException e) {
+                    i.putExtra("error", true);
+                    ctx.sendBroadcast(i);
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Intent i = new Intent(Constants.ADD_DIRECTIONS_OPERATION);
+                i.putExtra("error", true);
+                ctx.sendBroadcast(i);
             }
         });
         requestQueue.add(request);
@@ -80,6 +113,17 @@ public class NetworkUtils {
         return request;
 
 
+    }
+
+
+    private String buildLocationPath(LatLng from, LatLng to) {
+        String path = Constants.DIRECTION_BASE_URL;
+        String origin = "origin=" + from.latitude + "," + from.longitude;
+        String destination = "destination=" + to.latitude + "," + to.longitude;
+        String mode = "mode=walking";
+        path += origin + "&" + destination + "&" + mode;
+        Log.d(TAG, "Request link " + path);
+        return path;
     }
 
 }

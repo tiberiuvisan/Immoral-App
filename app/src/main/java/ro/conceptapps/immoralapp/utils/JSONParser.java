@@ -2,23 +2,56 @@ package ro.conceptapps.immoralapp.utils;
 
 import android.util.Log;
 
+import com.google.android.gms.maps.model.Polyline;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import ro.conceptapps.immoralapp.object.CustomPolyline;
 import ro.conceptapps.immoralapp.object.Places;
 
 public class JSONParser {
 
     private static final String TAG = "JSONParser";
 
+
+    public static ArrayList<CustomPolyline> parseDirections(String response) throws JSONException {
+        ArrayList<CustomPolyline> results = new ArrayList<>();
+        JSONObject obj = new JSONObject(response);
+        String status = obj.getString("status");
+        if (status.equals("OK")) {
+            JSONArray routes = obj.getJSONArray("routes");
+            for (int i = 0; i < routes.length(); i++) {
+                JSONObject route = routes.getJSONObject(i);
+                JSONObject overviewPolyline = route.getJSONObject("overview_polyline");
+                String points = overviewPolyline.getString("points");
+                JSONObject bounds = route.getJSONObject("bounds");
+                JSONObject northeast = bounds.getJSONObject("northeast");
+                String latNE = northeast.getString("lat");
+                String lngNE = northeast.getString("lng");
+                JSONObject southwest = bounds.getJSONObject("southwest");
+                String latSW = southwest.getString("lat");
+                String lngSW = southwest.getString("lng");
+                CustomPolyline customPolyline = new CustomPolyline();
+                customPolyline.setEncodedPolyline(points);
+                customPolyline.setLatNE(Double.parseDouble(latNE));
+                customPolyline.setLngNE(Double.parseDouble(lngNE));
+                customPolyline.setLatSV(Double.parseDouble(latSW));
+                customPolyline.setLngSV(Double.parseDouble(lngSW));
+                results.add(customPolyline);
+            }
+        }
+        return results;
+    }
+
     public static ArrayList<Places> parsePlaces(String response) throws JSONException {
         ArrayList<Places> results = new ArrayList<>();
 
         JSONArray array = new JSONArray(response);
-        Log.d(TAG,"response on places: " + response);
+        Log.d(TAG, "response on places: " + response);
         for (int i = 0; i < array.length(); i++) {
             JSONObject obj = (JSONObject) array.get(i);
             String place_id = obj.getString("place_id");
@@ -43,7 +76,7 @@ public class JSONParser {
             place.setLatNE(Double.parseDouble(boundingBox.getString(1)));
             place.setLngSV(Double.parseDouble(boundingBox.getString(2)));
             place.setLngNE(Double.parseDouble(boundingBox.getString(3)));
-            Log.d(TAG,"response latLngBounds" + place.getLatLngBounds());
+            Log.d(TAG, "response latLngBounds" + place.getLatLngBounds());
             results.add(place);
         }
         return results;
