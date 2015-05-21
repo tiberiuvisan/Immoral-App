@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">ImmoralApp</string>
-    <string name="title_activity_main">Map</string>
+    <string name="wellcome">Bun venit!</string>
     <string name="action_search">Cautare</string>
+    <string name="action_logout">Logout</string>
     <string name="distance_km">%1$.1f Km</string>
     <string name="distance_m">%1$.1f m</string>
 

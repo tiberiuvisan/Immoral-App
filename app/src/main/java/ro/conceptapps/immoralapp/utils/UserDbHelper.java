@@ -98,10 +98,12 @@ public class UserDbHelper extends SQLiteOpenHelper {
         getInstance(context);
         int id=-1;
         Cursor cursor = db.query(TABLE_USERS,TABLE_ALL_COLS_USERS,TABLE_COL_USER+"='"+user+"'",null,null,null,null);
-        while (!cursor.isAfterLast()){
-            id = cursor.getInt(0);
-            cursor.moveToNext();
-        }
+       if(cursor.moveToFirst()) {
+           while (!cursor.isAfterLast()) {
+               id = cursor.getInt(0);
+               cursor.moveToNext();
+           }
+       }
         cursor.close();
         return id;
     }
@@ -110,9 +112,11 @@ public class UserDbHelper extends SQLiteOpenHelper {
         getInstance(context);
         String userName="";
         Cursor cursor = db.query(TABLE_USERS,TABLE_ALL_COLS_USERS,TABLE_COL_ID + " = '" + id + "'",null,null,null,null);
-        while (!cursor.isAfterLast()){
-            userName = cursor.getString(1);
-            cursor.moveToNext();
+        if(cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                userName = cursor.getString(1);
+                cursor.moveToNext();
+            }
         }
         cursor.close();
         return userName;
@@ -122,9 +126,11 @@ public class UserDbHelper extends SQLiteOpenHelper {
         getInstance(context);
         String phone="";
         Cursor cursor = db.query(TABLE_USERS, TABLE_ALL_COLS_USERS,TABLE_COL_ID + " = '"+userId+"'",null,null,null,null);
-        while(!cursor.isAfterLast()){
-            phone = cursor.getString(3);
-            cursor.moveToNext();
+        if(cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                phone = cursor.getString(3);
+                cursor.moveToNext();
+            }
         }
         cursor.close();
         return phone;

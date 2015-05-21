@@ -1,10 +1,12 @@
 package ro.conceptapps.immoralapp.activities;
 
+import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
@@ -17,10 +19,13 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.AlertDialogWrapper;
 import com.google.android.gms.maps.GoogleMap;
@@ -84,7 +89,8 @@ public class MainActivity extends ActionBarActivity {
         //in momentul in care activitatea este oprita, se salveaza ultima locatie in SharedPreferences;
         sp.edit().putFloat(Constants.SHARED_PREFS_LASTLAT, (float) latLng.latitude).apply();
         sp.edit().putFloat(Constants.SHARED_PREFS_LASTLNG, (float) latLng.longitude).apply();
-        GPSLocation.getLastInstance().disconnect();
+        if(GPSLocation.getLastInstance()!=null)
+            GPSLocation.getLastInstance().disconnect();
         super.onPause();
     }
 
@@ -142,8 +148,6 @@ public class MainActivity extends ActionBarActivity {
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(LatLng latLng) {
-
-
                 addMarker(latLng);
 
             }
@@ -175,7 +179,7 @@ public class MainActivity extends ActionBarActivity {
         final Pin pin = new Pin();
 
         ArrayList<String> typeList = new ArrayList<>();
-        String immoralActivities[] = this.getResources().getStringArray(R.array.type);
+        final String immoralActivities[] = this.getResources().getStringArray(R.array.type);
         for (int i = 0; i < immoralActivities.length; i++) {
             typeList.add(immoralActivities[i]);
         }
@@ -204,6 +208,10 @@ public class MainActivity extends ActionBarActivity {
                     @Override
                     public void onClick(final DialogInterface dialog, int which) {
                         activityDesc = desc.getText().toString();
+                        if(activityType.equals(immoralActivities[0])){
+                            Toast.makeText(MainActivity.this,"Nu ati selectat cazul intalnit",Toast.LENGTH_LONG).show();
+                            return;
+                        }
                         Log.d(TAG, activityDesc);
                         Log.d(TAG, desc.getText().toString());
                         PinDbHelper.addPinToDatabase(MainActivity.this, SessionManager.getInstance().getId(), activityType, activityDesc, latLng.latitude, latLng.longitude);
@@ -222,6 +230,10 @@ public class MainActivity extends ActionBarActivity {
                 dialog.dismiss();
             }
         });
+        Dialog d = adb.create();
+        d.findViewById(R.id.titleFrame).setBackgroundColor(this.getResources().getColor(R.color.dark_blue));
+        ((TextView) d.findViewById(R.id.title)).setTextColor(Color.WHITE);
+        d.show();
 
     }
 
@@ -241,7 +253,49 @@ public class MainActivity extends ActionBarActivity {
                 }
             }
         });
+        int searchImgId = android.support.v7.appcompat.R.id.search_button;
+        int searchClose = android.support.v7.appcompat.R.id.search_close_btn;
+        ImageView searchImg = (ImageView) searchView.findViewById(searchImgId);
+        ImageView closeImg = (ImageView)searchView.findViewById(searchClose);
+        searchImg.setImageResource(R.mipmap.ic_search);
+        closeImg.setImageResource(R.mipmap.ic_clear);
+
+        changeSearchViewTextColor(searchView);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+        if (id == R.id.action_logout) {
+            AlertDialogWrapper.Builder builder = new AlertDialogWrapper.Builder((new ContextThemeWrapper(this, R.style.Theme_AppCompat_Light_Dialog)));
+            builder.setCancelable(true)
+                    .setMessage("Logout?")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+                            SessionManager.getInstance().logout();
+                            finish();
+                        }
+                    }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            Dialog d = builder.create();
+            ((TextView) d.findViewById(R.id.title)).setTextColor(Color.WHITE);
+            d.show();
+
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+
     }
 
     @Override
@@ -290,4 +344,21 @@ public class MainActivity extends ActionBarActivity {
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
+
+    private void changeSearchViewTextColor(View view) {
+        if (view != null) {
+            if (view instanceof TextView) {
+                ((TextView) view).setTextColor(Color.WHITE);
+                ((TextView)view).setHintTextColor(getResources().getColor(R.color.immoral_search_grey));
+                return;
+            } else if (view instanceof ViewGroup) {
+                ViewGroup viewGroup = (ViewGroup) view;
+                for (int i = 0; i < viewGroup.getChildCount(); i++) {
+                    changeSearchViewTextColor(viewGroup.getChildAt(i));
+                }
+            }
+        }
+    }
+
+
 }

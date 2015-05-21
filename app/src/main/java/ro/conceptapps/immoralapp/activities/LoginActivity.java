@@ -20,6 +20,7 @@ public class LoginActivity extends ActionBarActivity {
     private EditText passwordEditText;
     private Button loginButton;
     private Button registerButton;
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,20 +42,14 @@ public class LoginActivity extends ActionBarActivity {
         passwordEditText = (EditText) findViewById(R.id.password);
         loginButton = (Button) findViewById(R.id.btn_login);
         registerButton = (Button) findViewById(R.id.btn_register);
+
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!SessionManager.getInstance().isLoggedIn())
-                    doLogin();
-                else {
-                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                    finish();
-                }
+                doLogin();
             }
         });
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
+        setToolbar();
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -65,6 +60,11 @@ public class LoginActivity extends ActionBarActivity {
 
     }
 
+    private void setToolbar() {
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setTitleTextColor(getResources().getColor(R.color.white));
+    }
 
     private void doLogin() {
         /*if (usernameEditText.getText().toString().equals("admin") &&

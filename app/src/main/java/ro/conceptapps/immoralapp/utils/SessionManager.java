@@ -64,5 +64,10 @@ public class SessionManager  {
         return false;
     }
 
+    public void logout() {
+        editor.clear().commit();
+        saveLoggedIn(false);
+    }
+
 
 }

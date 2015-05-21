@@ -3,10 +3,12 @@ package ro.conceptapps.immoralapp.map;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.location.Location;
-import android.text.util.Linkify;
+import android.net.Uri;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -76,6 +78,7 @@ public class MapUtils {
         mClusterManager.setOnClusterItemInfoWindowClickListener(new ClusterManager.OnClusterItemInfoWindowClickListener<Pin>() {
             @Override
             public void onClusterItemInfoWindowClick(Pin pin) {
+                infoDialog(pin);
 
             }
         });
@@ -112,9 +115,11 @@ public class MapUtils {
         user.setText(UserDbHelper.getUserName(ctx,pin.userId));
         desc.setText(pin.description);
         phone.setText(UserDbHelper.getPhone(ctx,pin.userId));
-        Linkify.addLinks(phone, Linkify.ALL);
+        makeSmsLink(phone,pin);
+        /*Linkify.addLinks(phone, Linkify.ALL);*/
 
         adb.setTitle(pin.type)
+                .setView(view)
                 .autoDismiss(false)
                 .setCancelable(false)
                 .setNegativeButton("Inchide", new DialogInterface.OnClickListener() {
@@ -129,6 +134,22 @@ public class MapUtils {
         d.show();
 
 
+
+    }
+
+    public void makeSmsLink (final TextView phone,final Pin pin){
+        phone.setTextColor(ctx.getResources().getColor(R.color.nav_drawer_color));
+        phone.setPaintFlags(Paint.UNDERLINE_TEXT_FLAG);
+        phone.setClickable(true);
+        phone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Uri uri = Uri.parse("smsto:"+phone.getText().toString());
+                Intent intent = new Intent(Intent.ACTION_SENDTO, uri);
+                intent.putExtra("sms_body","Imi poti da mai multe detalii legat de evenimentul "+pin.type+"?");
+                ctx.startActivity(intent);
+            }
+        });
 
     }
 
