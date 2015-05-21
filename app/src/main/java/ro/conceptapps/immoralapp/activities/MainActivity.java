@@ -28,6 +28,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.AlertDialogWrapper;
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -207,9 +209,11 @@ public class MainActivity extends ActionBarActivity {
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(final DialogInterface dialog, int which) {
+                        disableOkButton(dialog);
                         activityDesc = desc.getText().toString();
                         if(activityType.equals(immoralActivities[0])){
                             Toast.makeText(MainActivity.this,"Nu ati selectat cazul intalnit",Toast.LENGTH_LONG).show();
+                            enableOkButton(dialog);
                             return;
                         }
                         Log.d(TAG, activityDesc);
@@ -360,5 +364,14 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
+    public static void disableOkButton(DialogInterface dialog){
+        final View ok = ((MaterialDialog) dialog).getActionButton(DialogAction.POSITIVE);
+        ok.setEnabled(false);
+    }
+
+    public static void enableOkButton(DialogInterface dialog){
+        final View ok = ((MaterialDialog) dialog).getActionButton(DialogAction.POSITIVE);
+        ok.setEnabled(true);
+    }
 
 }
