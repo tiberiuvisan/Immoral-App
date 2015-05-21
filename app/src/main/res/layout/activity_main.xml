@@ -3,6 +3,8 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
+    <include android:id="@+id/alertLayout"
+        layout="@layout/alert_item"/>
     <include
         android:id="@+id/toolbar"
         layout="@layout/activity_main_toolbar" />
@@ -14,4 +16,9 @@
         android:layout_below="@id/toolbar"
         android:layout_height="match_parent"
         tools:context=".MainActivity" />
+    <include android:id="@+id/alertLayout"
+        layout="@layout/alert_item"/>
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/activity_main_toolbar" />
 </RelativeLayout>

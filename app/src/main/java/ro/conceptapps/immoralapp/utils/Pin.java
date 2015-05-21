@@ -12,6 +12,7 @@ public class Pin implements Serializable, ClusterItem {
     public String type;
     public String description;
     public double lat;
+    public float distance;
     public double lng;
 
 

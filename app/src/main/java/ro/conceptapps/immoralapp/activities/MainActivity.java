@@ -2,9 +2,11 @@ package ro.conceptapps.immoralapp.activities;
 
 import android.app.Dialog;
 import android.app.SearchManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.location.Location;
@@ -34,14 +36,13 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 
 import ro.conceptapps.immoralapp.R;
 import ro.conceptapps.immoralapp.map.GPSLocation;
 import ro.conceptapps.immoralapp.map.MapUtils;
+import ro.conceptapps.immoralapp.object.Data;
 import ro.conceptapps.immoralapp.utils.Constants;
 import ro.conceptapps.immoralapp.utils.Pin;
 import ro.conceptapps.immoralapp.utils.PinDbHelper;
@@ -58,7 +59,17 @@ public class MainActivity extends ActionBarActivity {
     private MapUtils mapUtils;
     private ArrayList<Pin> markers;
     private static String activityType, activityDesc;
+    Pin onResultPin;
 
+
+    private BroadcastReceiver polylineBroadcast = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            for (int i = 0; i < Data.polylines.size(); i++) {
+                mapUtils.addPolyline(Data.polylines.get(i));
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,16 +93,15 @@ public class MainActivity extends ActionBarActivity {
     protected void onResume() {
         //in momentul in care se revine in activitate, un nou set de coordonate este creeat din
         //ultimele valori puse. Astfel, utilizatorul nu va fi trimis niciodata pe coordonate (0,0)
+        registerReceiver(polylineBroadcast, new IntentFilter(Constants.ADD_DIRECTIONS_OPERATION));
         latLng = new LatLng(sp.getFloat(Constants.SHARED_PREFS_LASTLAT, 0), sp.getFloat(Constants.SHARED_PREFS_LASTLNG, 0));
         super.onResume();
     }
 
     @Override
     protected void onPause() {
-        //in momentul in care activitatea este oprita, se salveaza ultima locatie in SharedPreferences;
-        sp.edit().putFloat(Constants.SHARED_PREFS_LASTLAT, (float) latLng.latitude).apply();
-        sp.edit().putFloat(Constants.SHARED_PREFS_LASTLNG, (float) latLng.longitude).apply();
-        if(GPSLocation.getLastInstance()!=null)
+        unregisterReceiver(polylineBroadcast);
+        if (GPSLocation.getLastInstance() != null)
             GPSLocation.getLastInstance().disconnect();
         super.onPause();
     }
@@ -163,9 +173,10 @@ public class MainActivity extends ActionBarActivity {
             public void gotLocation(Location location) {
                 if (location != null) {
                     latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                    sp.edit().putFloat(Constants.SHARED_PREFS_LASTLAT, (float) latLng.latitude).apply();
+                    sp.edit().putFloat(Constants.SHARED_PREFS_LASTLNG, (float) latLng.longitude).apply();
                     mapUtils.zoomToLocation(latLng, 15);
                     Log.d(TAG, "in get Location");
-                    //GPSLocation.getLastInstance().disconnect();
                 }
             }
         });
@@ -211,8 +222,8 @@ public class MainActivity extends ActionBarActivity {
                     public void onClick(final DialogInterface dialog, int which) {
                         disableOkButton(dialog);
                         activityDesc = desc.getText().toString();
-                        if(activityType.equals(immoralActivities[0])){
-                            Toast.makeText(MainActivity.this,"Nu ati selectat cazul intalnit",Toast.LENGTH_LONG).show();
+                        if (activityType.equals(immoralActivities[0])) {
+                            Toast.makeText(MainActivity.this, "Nu ati selectat cazul intalnit", Toast.LENGTH_LONG).show();
                             enableOkButton(dialog);
                             return;
                         }
@@ -260,7 +271,7 @@ public class MainActivity extends ActionBarActivity {
         int searchImgId = android.support.v7.appcompat.R.id.search_button;
         int searchClose = android.support.v7.appcompat.R.id.search_close_btn;
         ImageView searchImg = (ImageView) searchView.findViewById(searchImgId);
-        ImageView closeImg = (ImageView)searchView.findViewById(searchClose);
+        ImageView closeImg = (ImageView) searchView.findViewById(searchClose);
         searchImg.setImageResource(R.mipmap.ic_search);
         closeImg.setImageResource(R.mipmap.ic_clear);
 
@@ -322,15 +333,29 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
+        String type = "Navigheaza";
+        if (onResultPin == null) {
+            onResultPin = new Pin();
+        } else {
+            mapUtils.removeFromCluster(onResultPin);
+            mapUtils.recluster();
+            onResultPin = new Pin();
+        }
         if (resultCode == RESULT_OK) {
             Log.d(TAG, data.toString());
             double returnLatitude = data.getDoubleExtra("returnLatitude", 0);
             double returnLongitude = data.getDoubleExtra("returnLongitude", 0);
-            Marker marker = mMap.addMarker(new MarkerOptions().draggable(true)
+            onResultPin.lat = returnLatitude;
+            onResultPin.lng = returnLongitude;
+            onResultPin.type = type;
+            onResultPin.description = "Navigheaza pana in acest punct";
+            mapUtils.addToCluster(onResultPin);
+            mapUtils.recluster();
+           /* if (marker != null) marker.remove();
+            marker = mMap.addMarker(new MarkerOptions().draggable(true)
                     .position(new LatLng(returnLatitude, returnLongitude)));
             marker.setSnippet("Navigheaza pana la aceasta pozitie");
-            marker.setTitle("NAVIGARE");
+            marker.setTitle("NAVIGARE");*/
             Log.d(TAG, "Position on return: " + new LatLng(returnLatitude, returnLongitude));
 
             if (requestCode == 100) {
@@ -353,7 +378,7 @@ public class MainActivity extends ActionBarActivity {
         if (view != null) {
             if (view instanceof TextView) {
                 ((TextView) view).setTextColor(Color.WHITE);
-                ((TextView)view).setHintTextColor(getResources().getColor(R.color.immoral_search_grey));
+                ((TextView) view).setHintTextColor(getResources().getColor(R.color.immoral_search_grey));
                 return;
             } else if (view instanceof ViewGroup) {
                 ViewGroup viewGroup = (ViewGroup) view;
@@ -364,12 +389,12 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    public static void disableOkButton(DialogInterface dialog){
+    public static void disableOkButton(DialogInterface dialog) {
         final View ok = ((MaterialDialog) dialog).getActionButton(DialogAction.POSITIVE);
         ok.setEnabled(false);
     }
 
-    public static void enableOkButton(DialogInterface dialog){
+    public static void enableOkButton(DialogInterface dialog) {
         final View ok = ((MaterialDialog) dialog).getActionButton(DialogAction.POSITIVE);
         ok.setEnabled(true);
     }

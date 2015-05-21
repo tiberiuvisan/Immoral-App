@@ -5,10 +5,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.location.Location;
 import android.net.Uri;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,11 +24,18 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.PolyUtil;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.algo.GridBasedAlgorithm;
 
 import ro.conceptapps.immoralapp.R;
+import ro.conceptapps.immoralapp.activities.MainActivity;
+import ro.conceptapps.immoralapp.object.CustomPolyline;
+import ro.conceptapps.immoralapp.utils.NetworkUtils;
 import ro.conceptapps.immoralapp.utils.Pin;
 import ro.conceptapps.immoralapp.utils.UserDbHelper;
 
@@ -37,6 +47,7 @@ public class MapUtils {
     private Context ctx;
     private SharedPreferences sp;
     private ClusterManager<Pin> mClusterManager;
+    Polyline trackPolyline;
 
 
     public MapUtils(Context ctx, GoogleMap map) {
@@ -72,20 +83,20 @@ public class MapUtils {
 
             }
         });
-
         map.setOnInfoWindowClickListener(mClusterManager);
 
         mClusterManager.setOnClusterItemInfoWindowClickListener(new ClusterManager.OnClusterItemInfoWindowClickListener<Pin>() {
             @Override
             public void onClusterItemInfoWindowClick(Pin pin) {
-                infoDialog(pin);
-
+                if (pin.type.equals("Navigheaza")) {
+                    NetworkUtils.getNetworkUtils(ctx).getDirections(pin.getPosition(),
+                            new LatLng(GPSLocation.getLastInstance().lastLocation.getLatitude(),
+                                    GPSLocation.getLastInstance().lastLocation.getLongitude()));
+                } else infoDialog(pin);
             }
         });
 
         map.setOnMarkerClickListener(mClusterManager);
-
-        // mClusterManager.setOnClusterItemClickListener();
 
         mClusterManager.setOnClusterClickListener(new ClusterManager.OnClusterClickListener<Pin>() {
             @Override
@@ -103,7 +114,7 @@ public class MapUtils {
         mClusterManager.setAlgorithm(new GridBasedAlgorithm<Pin>());
     }
 
-    public void infoDialog(Pin pin){
+    public void infoDialog(Pin pin) {
         AlertDialogWrapper.Builder adb = new AlertDialogWrapper.Builder(new ContextThemeWrapper(ctx, R.style.Theme_AppCompat_Light_Dialog));
         LayoutInflater inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.popup_infowindow, null);
@@ -112,11 +123,10 @@ public class MapUtils {
         final TextView desc = (TextView) view.findViewById(R.id.description);
         final TextView phone = (TextView) view.findViewById(R.id.phone);
 
-        user.setText(UserDbHelper.getUserName(ctx,pin.userId));
+        user.setText(UserDbHelper.getUserName(ctx, pin.userId));
         desc.setText(pin.description);
-        phone.setText(UserDbHelper.getPhone(ctx,pin.userId));
-        makeSmsLink(phone,pin);
-        /*Linkify.addLinks(phone, Linkify.ALL);*/
+        phone.setText(UserDbHelper.getPhone(ctx, pin.userId));
+        makeSmsLink(phone, pin);
 
         adb.setTitle(pin.type)
                 .setView(view)
@@ -134,19 +144,18 @@ public class MapUtils {
         d.show();
 
 
-
     }
 
-    public void makeSmsLink (final TextView phone,final Pin pin){
+    public void makeSmsLink(final TextView phone, final Pin pin) {
         phone.setTextColor(ctx.getResources().getColor(R.color.nav_drawer_color));
         phone.setPaintFlags(Paint.UNDERLINE_TEXT_FLAG);
         phone.setClickable(true);
         phone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Uri uri = Uri.parse("smsto:"+phone.getText().toString());
+                Uri uri = Uri.parse("smsto:" + phone.getText().toString());
                 Intent intent = new Intent(Intent.ACTION_SENDTO, uri);
-                intent.putExtra("sms_body","Imi poti da mai multe detalii legat de evenimentul "+pin.type+"?");
+                intent.putExtra("sms_body", "Imi poti da mai multe detalii legat de evenimentul " + pin.type + "?");
                 ctx.startActivity(intent);
             }
         });
@@ -155,6 +164,17 @@ public class MapUtils {
 
     public void addToCluster(Pin p) {
         mClusterManager.addItem(p);
+    }
+
+    public void addPolyline(CustomPolyline customPolyline) {
+        if (trackPolyline != null) trackPolyline.remove();
+        trackPolyline = map.addPolyline(new PolylineOptions()
+                .addAll(PolyUtil.decode(customPolyline.getEncodedPolyline()))
+                .width(convertDpToPixel(5, ctx)).color(ctx.getResources().getColor(R.color.action_bar_color)));
+
+
+        Log.d(TAG, "decoded poly: " + PolyUtil.decode(customPolyline.getEncodedPolyline()));
+        map.animateCamera(CameraUpdateFactory.newLatLngBounds(customPolyline.getLatLngBounds(), (int) convertDpToPixel(10, ctx)));
     }
 
     public void removeFromCluster(Pin pin) {
@@ -175,5 +195,13 @@ public class MapUtils {
         int padding = 0; // offset from edges of the map in pixels
         CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(latLngBounds, padding);
         map.animateCamera(cu);
+    }
+
+
+    public static float convertDpToPixel(float dp, Context context) {
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        float px = dp * (metrics.densityDpi / 160f);
+        return px;
     }
 }

@@ -22,7 +22,9 @@ public class PinRenderer extends DefaultClusterRenderer<Pin> {
     protected void onBeforeClusterItemRendered(Pin item, MarkerOptions markerOptions) {
         super.onBeforeClusterItemRendered(item, markerOptions);
         markerOptions.title(item.type);
-        markerOptions.snippet("apasati pentru detalii");
+        if (!item.type.equals("Navigheaza"))
+            markerOptions.snippet("apasati pentru detalii");
+        else markerOptions.snippet("apasati pentru a genera traseu");
         markerOptions.draggable(false);
     }
 }
