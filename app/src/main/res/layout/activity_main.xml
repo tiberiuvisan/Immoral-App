@@ -3,21 +3,77 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
-    <include android:id="@+id/alertLayout"
-        layout="@layout/alert_item"/>
-    <include
-        android:id="@+id/toolbar"
-        layout="@layout/activity_main_toolbar" />
-
     <fragment
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_below="@id/toolbar"
         android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar"
         tools:context=".MainActivity" />
-    <include android:id="@+id/alertLayout"
-        layout="@layout/alert_item"/>
+
+    <LinearLayout
+        android:id="@+id/event_linear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/toolbar"
+        android:layout_margin="10dp"
+        android:background="@android:color/white"
+        android:minHeight="?attr/actionBarSize"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        android:weightSum="1">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_weight="0.9"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_alert_title"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="TITLU"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tv_alert_distance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Distanta"
+                android:textColor="@android:color/black"
+                android:textSize="14sp" />
+
+
+            <TextView
+                android:id="@+id/tv_alert_reportedBy"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:gravity="center"
+                android:text="Raportat de"
+                android:textColor="@android:color/black"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/iv_alert_dismiss"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="0.1"
+            android:padding="5dp"
+            android:text="X"
+            android:textColor="@color/action_bar_color"
+            android:textSize="25sp" />
+
+    </LinearLayout>
+
     <include
         android:id="@+id/toolbar"
         layout="@layout/activity_main_toolbar" />

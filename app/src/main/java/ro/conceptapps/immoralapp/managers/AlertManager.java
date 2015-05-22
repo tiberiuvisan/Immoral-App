@@ -9,6 +9,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
@@ -37,7 +38,7 @@ public class AlertManager {
     MediaPlayer mp;
     Animation eventDown, eventUp;
     //Distanta de la care utilizatorul se atentioneaza;
-    int WARNING_DISTANCE = 70;
+    int WARNING_DISTANCE = 2900;
 
     public AlertManager(Context context, GoogleMap map, LinearLayout alertLayout,
                         TextView alertDistance, TextView alertTitle, TextView alertReportedBy,
@@ -66,7 +67,7 @@ public class AlertManager {
     private void animateLayout(boolean show) {
         if (show) {
             alertLayout.startAnimation(eventDown);
-            mp.start();
+            //mp.start();
             alertLayout.setVisibility(View.VISIBLE);
         } else {
             alertLayout.startAnimation(eventUp);
@@ -82,33 +83,36 @@ public class AlertManager {
 
 
     public void checkPoints(LatLng latLng) {
-        for (int i = 0; i < markers.size(); i++) {
-            markers.get(i).distance = MapUtils.distanceBetween(latLng, markers.get(i).getPosition());
-        }
-        Collections.sort(markers, comparatorDistance);
-        Pin closestPin = markers.get(0);
-        if (closestPin.distance < WARNING_DISTANCE) {
-            if (showingPin == null) {
-                animateLayout(true);
-                showingPin = closestPin;
-                updateAlertInfo(showingPin);
-            } else {
-                if (closestPin.id == showingPin.id) {
-                    alertDistance.setText((int) closestPin.distance + " m");
-                } else {
-                    Log.d("AlertManager", "changed closest point");
-                    mp.start();
+        if (markers.size() != 0) {
+            for (int i = 0; i < markers.size(); i++) {
+                markers.get(i).distance = MapUtils.distanceBetween(latLng, markers.get(i).getPosition());
+            }
+            Collections.sort(markers, comparatorDistance);
+            Pin closestPin = markers.get(0);
+            if (closestPin.distance < WARNING_DISTANCE) {
+                if (showingPin == null) {
+                    animateLayout(true);
                     showingPin = closestPin;
                     updateAlertInfo(showingPin);
-                    if (alertLayout.getVisibility() != View.VISIBLE) {
-                        animateLayout(true);
+                } else {
+                    if (closestPin.id == showingPin.id) {
+                        alertDistance.setText((int) closestPin.distance + " m");
+                    } else {
+                        Log.d("AlertManager", "changed closest point");
+                        //mp.start();
+                        showingPin = closestPin;
+                        updateAlertInfo(showingPin);
+                        if (alertLayout.getVisibility() != View.VISIBLE) {
+                            animateLayout(true);
+                        }
                     }
                 }
+            } else {
+                if (alertLayout.getVisibility() == View.VISIBLE) animateLayout(false);
             }
-        } else {
-            if (alertLayout.getVisibility() == View.VISIBLE) animateLayout(false);
-        }
-        Log.d("AlertManager", "closest point: " + closestPin.distance);
+            Log.d("AlertManager", "closest point: " + closestPin.distance);
+        } else
+            Toast.makeText(context, "Nu exista niciun eveniment immoral adaugat pe harta", Toast.LENGTH_LONG).show();
     }
 
     private void updateAlertInfo(Pin pin) {

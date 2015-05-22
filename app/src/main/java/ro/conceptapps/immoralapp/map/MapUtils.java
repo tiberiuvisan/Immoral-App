@@ -74,8 +74,9 @@ public class MapUtils {
         map.setMyLocationEnabled(true);
         setupClusterManager();
         mClusterManager.setRenderer(new PinRenderer(ctx, map, mClusterManager));
-        map.getUiSettings().setMyLocationButtonEnabled(false);
+        map.getUiSettings().setMyLocationButtonEnabled(true);
         map.getUiSettings().setMapToolbarEnabled(false);
+        map.getUiSettings().setZoomControlsEnabled(true);
         map.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
             @Override
             public void onCameraChange(CameraPosition cameraPosition) {

@@ -25,6 +25,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,6 +41,7 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import java.util.ArrayList;
 
 import ro.conceptapps.immoralapp.R;
+import ro.conceptapps.immoralapp.managers.AlertManager;
 import ro.conceptapps.immoralapp.map.GPSLocation;
 import ro.conceptapps.immoralapp.map.MapUtils;
 import ro.conceptapps.immoralapp.object.Data;
@@ -60,6 +62,9 @@ public class MainActivity extends ActionBarActivity {
     private ArrayList<Pin> markers;
     private static String activityType, activityDesc;
     Pin onResultPin;
+    private TextView alertDistance, alertTitle, alertReportedBy, alertDismiss;
+    private LinearLayout alertView;
+    private AlertManager alertManager;
 
 
     private BroadcastReceiver polylineBroadcast = new BroadcastReceiver() {
@@ -77,9 +82,14 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
         setToolbar();
         sp = getSharedPreferences(Constants.SHARED_PREFS, Context.MODE_PRIVATE);
+        initAlertViews();
+        alertView.setVisibility(View.GONE);
+        alertManager = new AlertManager(MainActivity.this, mMap, alertView, alertDistance,
+                alertTitle, alertReportedBy, alertDismiss);
         setUpMapIfNeeded();
         markers = PinDbHelper.getPinsFromDatabase(this);
         handleIntent(getIntent());
+
     }
 
 
@@ -94,6 +104,9 @@ public class MainActivity extends ActionBarActivity {
         //in momentul in care se revine in activitate, un nou set de coordonate este creeat din
         //ultimele valori puse. Astfel, utilizatorul nu va fi trimis niciodata pe coordonate (0,0)
         registerReceiver(polylineBroadcast, new IntentFilter(Constants.ADD_DIRECTIONS_OPERATION));
+        if (GPSLocation.getLastInstance() != null)
+            GPSLocation.getLastInstance().connect();
+        if (alertManager != null) alertManager.initArrayListElements();
         latLng = new LatLng(sp.getFloat(Constants.SHARED_PREFS_LASTLAT, 0), sp.getFloat(Constants.SHARED_PREFS_LASTLNG, 0));
         super.onResume();
     }
@@ -106,21 +119,7 @@ public class MainActivity extends ActionBarActivity {
         super.onPause();
     }
 
-    /**
-     * Sets up the map if it is possible to do so (i.e., the Google Play services APK is correctly
-     * installed) and the map has not already been instantiated.. This will ensure that we only ever
-     * call {@link #setUpMap()} once when {@link #mMap} is not null.
-     * <p/>
-     * If it isn't installed {@link SupportMapFragment} (and
-     * {@link com.google.android.gms.maps.MapView MapView}) will show a prompt for the user to
-     * install/update the Google Play services APK on their device.
-     * <p/>
-     * A user can return to this FragmentActivity after following the prompt and correctly
-     * installing/updating/enabling the Google Play services. Since the FragmentActivity may not
-     * have been completely destroyed during this process (it is likely that it would only be
-     * stopped or paused), {@link #onCreate(Bundle)} may not be called again so we should call this
-     * method in {@link #onResume()} to guarantee that it will be called.
-     */
+
     private void setUpMapIfNeeded() {
         // Do a null check to confirm that we have not already instantiated the map.
         if (mMap == null) {
@@ -135,12 +134,6 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    /**
-     * This is where we can add markers or lines, add listeners or move the camera. In this case, we
-     * just add a marker near Africa.
-     * <p/>
-     * This should only be called once and when we are sure that {@link #mMap} is not null.
-     */
     private void setUpMap() {
         mapUtils.setUpMap();
         mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
@@ -175,6 +168,7 @@ public class MainActivity extends ActionBarActivity {
                     latLng = new LatLng(location.getLatitude(), location.getLongitude());
                     sp.edit().putFloat(Constants.SHARED_PREFS_LASTLAT, (float) latLng.latitude).apply();
                     sp.edit().putFloat(Constants.SHARED_PREFS_LASTLNG, (float) latLng.longitude).apply();
+                    if (alertManager != null) alertManager.checkPoints(latLng);
                     mapUtils.zoomToLocation(latLng, 15);
                     Log.d(TAG, "in get Location");
                 }
@@ -237,6 +231,7 @@ public class MainActivity extends ActionBarActivity {
                         pin.userId = SessionManager.getInstance().getId();
                         mapUtils.addToCluster(pin);
                         mapUtils.recluster();
+                        alertManager.initArrayListElements();
                         dialog.dismiss();
                     }
                 }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
@@ -399,4 +394,11 @@ public class MainActivity extends ActionBarActivity {
         ok.setEnabled(true);
     }
 
+    private void initAlertViews() {
+        alertView = (LinearLayout) findViewById(R.id.event_linear);
+        alertTitle = (TextView) findViewById(R.id.tv_alert_title);
+        alertDistance = (TextView) findViewById(R.id.tv_alert_distance);
+        alertReportedBy = (TextView) findViewById(R.id.tv_alert_reportedBy);
+        alertDismiss = (TextView) findViewById(R.id.iv_alert_dismiss);
+    }
 }
