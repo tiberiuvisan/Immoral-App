@@ -153,19 +153,21 @@ public class AlertManager {
                             markersForEvents.get(j).getPosition());
                 }
                 Collections.sort(markersForEvents, comparatorDistance);
-                closestPin = markersForEvents.get(0);
-                if (closestPin.distance < WARNING_DISTANCE) {
-                    if (finalPins.size() == 0) finalPins.add(closestPin);
-                    else {
-                        boolean addPin = true;
-                        for (int k = 0; k < finalPins.size(); k++) {
-                            addPin = true;
-                            if (closestPin.id == finalPins.get(k).id) {
-                                addPin = false;
-                                Log.d("AlertManager", "closest pin id: " + closestPin.id + " final pins id: " + finalPins.get(k).id + " " + addPin);
+                if (markersForEvents.size() != 0) {
+                    closestPin = markersForEvents.get(0);
+                    if (closestPin.distance < WARNING_DISTANCE) {
+                        if (finalPins.size() == 0) finalPins.add(closestPin);
+                        else {
+                            boolean addPin = true;
+                            for (int k = 0; k < finalPins.size(); k++) {
+                                addPin = true;
+                                if (closestPin.id == finalPins.get(k).id) {
+                                    addPin = false;
+                                    Log.d("AlertManager", "closest pin id: " + closestPin.id + " final pins id: " + finalPins.get(k).id + " " + addPin);
+                                }
                             }
+                            if (addPin) finalPins.add(closestPin);
                         }
-                        if (addPin) finalPins.add(closestPin);
                     }
                 }
             }

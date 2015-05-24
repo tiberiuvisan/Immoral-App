@@ -25,7 +25,7 @@ import ro.conceptapps.immoralapp.utils.Constants;
 
 public class PlacesAdapter extends BaseAdapter {
 
-    private static final String TAG = "PlacesAdapter" ;
+    private static final String TAG = "PlacesAdapter";
     Context ctx;
     ArrayList<Places> placesArrayList;
     private LayoutInflater inflater;
@@ -55,7 +55,10 @@ public class PlacesAdapter extends BaseAdapter {
     }
 
     public void sort() {
-        Collections.sort(placesArrayList, importanceComparator);
+        for (Places place : placesArrayList) {
+            place.distance = MapUtils.distanceBetween(getCurrentLocation(), place.getLocation());
+        }
+        Collections.sort(placesArrayList, distanceComparator);
         notifyDataSetChanged();
     }
 
@@ -92,7 +95,7 @@ public class PlacesAdapter extends BaseAdapter {
                     double returnLngNE;
                     double returnLatSV;
                     double returnLngSV;*/
-                Log.d(TAG,"Position : " + getItem(position).getLocation());
+                Log.d(TAG, "Position : " + getItem(position).getLocation());
                 ((Activity) ctx).setResult(Activity.RESULT_OK, returnIntent);
                 ((Activity) ctx).finish();
             }
@@ -108,12 +111,12 @@ public class PlacesAdapter extends BaseAdapter {
         LinearLayout mainLayout;
     }
 
-    private Comparator<Places> importanceComparator = new Comparator<Places>() {
+    private Comparator<Places> distanceComparator = new Comparator<Places>() {
         @Override
         public int compare(Places lhs, Places rhs) {
-            if (lhs.getImportance() < rhs.getImportance())
+            if (lhs.distance < rhs.distance)
                 return -1;
-            else if (lhs.getImportance() > rhs.getImportance())
+            else if (lhs.distance > rhs.distance)
                 return 1;
             else
                 return 0;
