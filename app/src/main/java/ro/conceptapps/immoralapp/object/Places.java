@@ -18,6 +18,7 @@ public class Places implements Serializable {
     private double latNE;
     private double lngSV;
     private double lngNE;
+    public  double distance;
 
     public Places() {
     }
