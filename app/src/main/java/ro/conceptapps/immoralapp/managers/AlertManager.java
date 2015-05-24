@@ -9,7 +9,6 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
@@ -40,7 +39,7 @@ public class AlertManager {
     MediaPlayer mp;
     Animation eventDown, eventUp;
     //Distanta de la care utilizatorul se atentioneaza;
-    int WARNING_DISTANCE = 2900;
+    int WARNING_DISTANCE = 150;
 
     public AlertManager(Context context, GoogleMap map, LinearLayout alertLayout,
                         TextView alertDistance, TextView alertTitle, TextView alertReportedBy,

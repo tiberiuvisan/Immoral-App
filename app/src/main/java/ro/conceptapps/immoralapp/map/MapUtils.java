@@ -24,7 +24,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
@@ -33,9 +32,8 @@ import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.algo.GridBasedAlgorithm;
 
 import ro.conceptapps.immoralapp.R;
-import ro.conceptapps.immoralapp.activities.MainActivity;
-import ro.conceptapps.immoralapp.managers.AlertManager;
 import ro.conceptapps.immoralapp.object.CustomPolyline;
+import ro.conceptapps.immoralapp.utils.Constants;
 import ro.conceptapps.immoralapp.utils.NetworkUtils;
 import ro.conceptapps.immoralapp.utils.Pin;
 import ro.conceptapps.immoralapp.utils.UserDbHelper;
@@ -54,7 +52,7 @@ public class MapUtils {
     public MapUtils(Context ctx, GoogleMap map) {
         this.ctx = ctx;
         this.map = map;
-        sp = ctx.getSharedPreferences("SHARED_PREFERENCES", Context.MODE_PRIVATE);
+        sp = ctx.getSharedPreferences(Constants.SHARED_PREFS, Context.MODE_PRIVATE);
 
     }
 
@@ -157,7 +155,7 @@ public class MapUtils {
             public void onClick(View v) {
                 Uri uri = Uri.parse("smsto:" + phone.getText().toString());
                 Intent intent = new Intent(Intent.ACTION_SENDTO, uri);
-                intent.putExtra("sms_body", "Imi poti da mai multe detalii legat de evenimentul " + pin.type + "?");
+                intent.putExtra("sms_body", "Buna ziua! Imi puteti da mai multe detalii legate de evenimentul " + pin.type + "? Multumesc!");
                 ctx.startActivity(intent);
             }
         });

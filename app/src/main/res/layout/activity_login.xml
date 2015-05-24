@@ -18,7 +18,7 @@
             android:layout_marginTop="30dp"
             android:text="@string/wellcome"
             android:textColor="@android:color/black"
-            android:textSize="30dp" />
+            android:textSize="30sp" />
 
         <EditText
             android:id="@+id/username"
@@ -56,15 +56,5 @@
             android:background="@color/dark_blue"
             android:text="Inregistrare"
             android:textColor="@android:color/white" />
-
-        <Button
-            android:id="@+id/btn_skip"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:background="@color/dark_blue"
-            android:text="Vizualizeaza harta"
-            android:textColor="@android:color/white"
-            android:visibility="gone" />
 
     </LinearLayout>

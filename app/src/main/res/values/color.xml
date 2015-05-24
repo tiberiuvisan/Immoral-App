@@ -9,10 +9,6 @@
     <color name = "status_bar_color">#5393aa</color>
     <color name="white">#ffffff</color>
 
-    <color name="tabBackground">#5ba0b9</color>
-    <color name="tabTextColor">#ffffff</color>
-    <color name="tabSeparatorColor">#5192a9</color>
-    <color name="tabInactiveTabBar">#5192a9</color>
 
     <color name="holo_gray_light">#3f3f3f</color>
     <color name="immoral_search_grey">#998e9898</color>

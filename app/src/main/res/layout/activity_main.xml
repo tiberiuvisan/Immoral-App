@@ -20,7 +20,7 @@
         android:background="@android:color/white"
         android:minHeight="?attr/actionBarSize"
         android:orientation="horizontal"
-        android:visibility="gone"
+        android:visibility="visible"
         android:weightSum="1">
 
         <LinearLayout

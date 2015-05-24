@@ -31,7 +31,6 @@ public class SplashActivity extends Activity {
                         finish();
                     }
                 }
-
             }
         }, secondsDelayed * 1000);
     }
@@ -39,13 +38,11 @@ public class SplashActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-
         isShown = true;
-
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onPause() {
         super.onDestroy();
         isShown = false;
     }

@@ -54,6 +54,7 @@ public class LoginActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(LoginActivity.this, RegisterActivity.class);
+
                 startActivity(i);
             }
         });
@@ -78,19 +79,6 @@ public class LoginActivity extends ActionBarActivity {
             Toast.makeText(LoginActivity.this, "User invalid", Toast.LENGTH_SHORT).show();
         }
 
-
     }
 
-    private void doAdminLogin() {
-        //  startActivity(new Intent(this, AdminActivity.class));
-    }
-/*
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            onBackPressed();
-            return true;
-        } else
-            return super.onOptionsItemSelected(item);
-    }*/
 }

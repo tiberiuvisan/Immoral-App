@@ -60,6 +60,7 @@ public class UserDbHelper extends SQLiteOpenHelper {
     private static int getLastID(Context context) {
         getInstance(context);
 
+
         Cursor cursor = db.query(TABLE_USERS, TABLE_ALL_COLS_USERS, null, null, null, null, null);
         int id = cursor.getCount() + 1;
         cursor.close();

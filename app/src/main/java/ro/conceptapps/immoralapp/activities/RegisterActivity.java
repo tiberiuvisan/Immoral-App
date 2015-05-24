@@ -34,12 +34,13 @@ public class RegisterActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 registerUser();
-                RegisterActivity.this.finish();
+
             }
         });
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setTitleTextColor(getResources().getColor(R.color.white));
     }
 
 
@@ -48,6 +49,7 @@ public class RegisterActivity extends ActionBarActivity {
 
             UserDbHelper.addUserToDatabase(this, username.getText().toString(), password.getText().toString(), phoneNumber.getText().toString());
             Toast.makeText(this, "Utilizatorul a fost adaugat", Toast.LENGTH_SHORT).show();
+            RegisterActivity.this.finish();
         } else {
             Toast.makeText(this, "Nu ati completat toate campurile", Toast.LENGTH_SHORT).show();
         }
