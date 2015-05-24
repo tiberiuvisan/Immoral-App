@@ -34,6 +34,7 @@ import com.google.maps.android.clustering.algo.GridBasedAlgorithm;
 
 import ro.conceptapps.immoralapp.R;
 import ro.conceptapps.immoralapp.activities.MainActivity;
+import ro.conceptapps.immoralapp.managers.AlertManager;
 import ro.conceptapps.immoralapp.object.CustomPolyline;
 import ro.conceptapps.immoralapp.utils.NetworkUtils;
 import ro.conceptapps.immoralapp.utils.Pin;
@@ -175,7 +176,7 @@ public class MapUtils {
 
 
         Log.d(TAG, "decoded poly: " + PolyUtil.decode(customPolyline.getEncodedPolyline()));
-        map.animateCamera(CameraUpdateFactory.newLatLngBounds(customPolyline.getLatLngBounds(), (int) convertDpToPixel(10, ctx)));
+        map.animateCamera(CameraUpdateFactory.newLatLngBounds(customPolyline.getLatLngBounds(), (int) convertDpToPixel(30, ctx)));
     }
 
     public void removeFromCluster(Pin pin) {

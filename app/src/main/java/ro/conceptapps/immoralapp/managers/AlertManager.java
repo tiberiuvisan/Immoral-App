@@ -13,10 +13,12 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.PolyUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 import ro.conceptapps.immoralapp.R;
 import ro.conceptapps.immoralapp.map.MapUtils;
@@ -111,8 +113,8 @@ public class AlertManager {
                 if (alertLayout.getVisibility() == View.VISIBLE) animateLayout(false);
             }
             Log.d("AlertManager", "closest point: " + closestPin.distance);
-        } else
-            Toast.makeText(context, "Nu exista niciun eveniment immoral adaugat pe harta", Toast.LENGTH_LONG).show();
+        } /*else
+            Toast.makeText(context, "Nu exista niciun eveniment immoral adaugat pe harta", Toast.LENGTH_LONG).show();*/
     }
 
     private void updateAlertInfo(Pin pin) {
@@ -137,5 +139,39 @@ public class AlertManager {
             else return 0;
         }
     };
+
+    public int getNumberOfEvents(String encodedPolyline, Context context) {
+        List<LatLng> polylinePins = PolyUtil.decode(encodedPolyline);
+        ArrayList<Pin> markersForEvents = PinDbHelper.getPinsFromDatabase(context);
+        ArrayList<Pin> finalPins = new ArrayList<>();
+        Pin closestPin;
+        //pentru fiecare punct din polyline pins sa verific fiecare punct
+        //din markers for events, iar dupa sa verific fiecare element din markersFinal
+        if (polylinePins.size() != 0) {
+            for (int i = 0; i < polylinePins.size(); i++) {
+                for (int j = 0; j < markersForEvents.size(); j++) {
+                    markersForEvents.get(j).distance = MapUtils.distanceBetween(polylinePins.get(i),
+                            markersForEvents.get(j).getPosition());
+                }
+                Collections.sort(markersForEvents, comparatorDistance);
+                closestPin = markersForEvents.get(0);
+                if (closestPin.distance < WARNING_DISTANCE) {
+                    if (finalPins.size() == 0) finalPins.add(closestPin);
+                    else {
+                        boolean addPin = true;
+                        for (int k = 0; k < finalPins.size(); k++) {
+                            addPin = true;
+                            if (closestPin.id == finalPins.get(k).id) {
+                                addPin = false;
+                                Log.d("AlertManager", "closest pin id: " + closestPin.id + " final pins id: " + finalPins.get(k).id + " " + addPin);
+                            }
+                        }
+                        if (addPin) finalPins.add(closestPin);
+                    }
+                }
+            }
+        }
+        return finalPins.size();
+    }
 
 }

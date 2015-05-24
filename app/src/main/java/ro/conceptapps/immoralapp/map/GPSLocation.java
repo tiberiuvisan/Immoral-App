@@ -100,18 +100,8 @@ public class GPSLocation implements GoogleApiClient.ConnectionCallbacks,
     public void onLocationChanged(final Location location) {
 
         if (lastLocation != null) {
-            if (!formatLatitude(lastLocation.getLatitude()).equals(formatLatitude(location.getLatitude()))
-                    && !formatLatitude(lastLocation.getLongitude()).equals(formatLatitude(location.getLongitude()))) {
                 locationChanged = true;
                 Log.d(TAG, "onLocationChanged() lat:" + location.getLatitude() + ", lng:" + location.getLongitude());
-            } else {
-                counter++;
-                if (counter == 3) {
-                    locationChanged = false;
-                    counter = 0;
-                }
-                Log.d(TAG, " OnLocationChange No location change");
-            }
         }
         locationResult.gotLocation(location);
         lastLocation = location;
@@ -137,10 +127,6 @@ public class GPSLocation implements GoogleApiClient.ConnectionCallbacks,
         Log.d(TAG, "Connection failed");
         locationResult.gotLocation(null);
         done = true;
-    }
-
-    private String formatLatitude(double LatOrLng) {
-        return String.format("%.6f", LatOrLng);
     }
 
 

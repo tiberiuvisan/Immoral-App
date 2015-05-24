@@ -67,10 +67,7 @@ public class LoginActivity extends ActionBarActivity {
     }
 
     private void doLogin() {
-        /*if (usernameEditText.getText().toString().equals("admin") &&
-                passwordEditText.getText().toString().equals("admin")) {
-            doAdminLogin();
-        } else {*/
+
 
         if (UserDbHelper.checkLogin(LoginActivity.this, usernameEditText.getText().toString(), passwordEditText.getText().toString()) != -1) {
             SessionManager.getInstance().saveId(UserDbHelper.getId(LoginActivity.this,usernameEditText.getText().toString()));

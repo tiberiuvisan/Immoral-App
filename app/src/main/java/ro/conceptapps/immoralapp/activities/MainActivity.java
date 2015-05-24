@@ -72,6 +72,12 @@ public class MainActivity extends ActionBarActivity {
         public void onReceive(Context context, Intent intent) {
             for (int i = 0; i < Data.polylines.size(); i++) {
                 mapUtils.addPolyline(Data.polylines.get(i));
+
+                int events = alertManager.getNumberOfEvents(Data.polylines.get(i).getEncodedPolyline(), MainActivity.this);
+                if (events != 0)
+                    Toast.makeText(MainActivity.this, "In jurul traseului s-au inregistrat " + events + " evenimente imorale", Toast.LENGTH_LONG).show();
+                else
+                    Toast.makeText(MainActivity.this, "In jurul traseului nu s-au inregistrat evenimente imorale", Toast.LENGTH_LONG).show();
             }
         }
     };
@@ -169,7 +175,6 @@ public class MainActivity extends ActionBarActivity {
                     sp.edit().putFloat(Constants.SHARED_PREFS_LASTLAT, (float) latLng.latitude).apply();
                     sp.edit().putFloat(Constants.SHARED_PREFS_LASTLNG, (float) latLng.longitude).apply();
                     if (alertManager != null) alertManager.checkPoints(latLng);
-                    mapUtils.zoomToLocation(latLng, 15);
                     Log.d(TAG, "in get Location");
                 }
             }
