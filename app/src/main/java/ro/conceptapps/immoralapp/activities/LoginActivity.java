@@ -13,6 +13,7 @@ import ro.conceptapps.immoralapp.R;
 import ro.conceptapps.immoralapp.utils.SessionManager;
 import ro.conceptapps.immoralapp.utils.UserDbHelper;
 
+//Activitatea in care se face log in
 
 public class LoginActivity extends ActionBarActivity {
 
@@ -22,6 +23,8 @@ public class LoginActivity extends ActionBarActivity {
     private Button registerButton;
     Toolbar toolbar;
 
+    //Functia in care se creeaza view-ul
+    //folosim layout-ul activity_login
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,6 +39,8 @@ public class LoginActivity extends ActionBarActivity {
         passwordEditText.setText("");
         usernameEditText.requestFocus();
     }
+
+
 
     private void initView() {
         usernameEditText = (EditText) findViewById(R.id.username);
@@ -66,6 +71,12 @@ public class LoginActivity extends ActionBarActivity {
         setSupportActionBar(toolbar);
         toolbar.setTitleTextColor(getResources().getColor(R.color.white));
     }
+
+    //functia in care se face login
+    //folosim checkLogin pentru a verifica daca utilizatorul cu usernameul si parola introduse exista in baza de date sau nu.
+    //in cazul in care exista, salvam id-ul userului(prin functia saveId) si setam booleana isLogged (prin functia saveLoggedIn) in ca true. ea va retine faptul ca s-a facut autentificarea.
+    //apoi pornim activitatea principala MainActivity si o inchidem pe cea de Login
+    //in cazul in care nu exista userul in baza de date, afisam mesajul "User invalid".
 
     private void doLogin() {
 

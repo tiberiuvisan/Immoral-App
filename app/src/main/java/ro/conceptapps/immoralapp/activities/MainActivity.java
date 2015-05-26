@@ -50,6 +50,8 @@ import ro.conceptapps.immoralapp.utils.Pin;
 import ro.conceptapps.immoralapp.utils.PinDbHelper;
 import ro.conceptapps.immoralapp.utils.SessionManager;
 
+//Activitatea principala/harta
+
 public class MainActivity extends ActionBarActivity {
 
     private static final String TAG = "MapActivity";
@@ -65,7 +67,7 @@ public class MainActivity extends ActionBarActivity {
     private LinearLayout alertView;
     private AlertManager alertManager;
 
-
+//in momentul in care primeste broadcast-ul (trimis din network utils de functia getDirections)  afiseaza polyline-ul si numarul de evenimente inregistrat in jurul traseului
     private BroadcastReceiver polylineBroadcast = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -82,7 +84,7 @@ public class MainActivity extends ActionBarActivity {
             }
         }
     };
-
+//genereaza view-ul, folosim layout-ul activity_main
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -166,6 +168,7 @@ public class MainActivity extends ActionBarActivity {
         });
     }
 
+    //salveaza ultima locatie din GPS
     private void getLocation() {
         Log.d(TAG, "in get Location");
         new GPSLocation(this, new GPSLocation.LocationResult() {
@@ -181,6 +184,11 @@ public class MainActivity extends ActionBarActivity {
             }
         });
     }
+//functia pentru adaugare incident
+//apare popup-ul de adaugare incident in care selectam cazul si introduccem desscrierea incidentului
+// prin apasarea butonului ok in cazul in care tipul cazului a fost selectat, se salveaza pinul in baza de date si se adauga pe harta
+//in cazul in care tipul nu a fost selectat se afiseaza un mesaj de eroare si se asteapta adaugarea tipului
+// daca se apasa butonul cancel, popup-ul dispare
 
     private void addMarker(final LatLng latLng) {
         AlertDialogWrapper.Builder adb = new AlertDialogWrapper.Builder(new ContextThemeWrapper(this, R.style.Theme_AppCompat_Light_Dialog));
@@ -253,6 +261,7 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
+//creeaza meniul de search din toolbar
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
@@ -279,6 +288,10 @@ public class MainActivity extends ActionBarActivity {
         changeSearchViewTextColor(searchView);
         return true;
     }
+
+//se creeaza logout-ul din meniu. atunci cand se apasa pe logout apare un popup de confirmare.
+    //daca se apasa ok se sterg datele salvate in shared preferences si se porneste activitatea de login
+    //daca se apasa cancel, dialogl dispare
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
