@@ -76,7 +76,7 @@ public class NetworkUtils {
                 Log.d(TAG, "get Direction response : " + response);
                 Intent i = new Intent(Constants.ADD_DIRECTIONS_OPERATION);
                 try {
-                    Data.polylines = JSONParser.parseDirections(response);
+                    Data.polylines = JSONParser.parseDirections(ctx, response);
                     i.putExtra("error", false);
                     ctx.sendBroadcast(i);
                 } catch (JSONException e) {

@@ -1,6 +1,8 @@
 package ro.conceptapps.immoralapp.utils;
 
+import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.Polyline;
 
@@ -18,13 +20,15 @@ public class JSONParser {
     private static final String TAG = "JSONParser";
 
 
-    public static ArrayList<CustomPolyline> parseDirections(String response) throws JSONException {
+    public static ArrayList<CustomPolyline> parseDirections(Context ctx, String response) throws JSONException {
         ArrayList<CustomPolyline> results = new ArrayList<>();
         JSONObject obj = new JSONObject(response);
         String status = obj.getString("status");
         if (status.equals("OK")) {
             JSONArray routes = obj.getJSONArray("routes");
             for (int i = 0; i < routes.length(); i++) {
+                CustomPolyline customPolyline = new CustomPolyline();
+                customPolyline.requestStatus = status;
                 JSONObject route = routes.getJSONObject(i);
                 JSONObject overviewPolyline = route.getJSONObject("overview_polyline");
                 String points = overviewPolyline.getString("points");
@@ -35,7 +39,6 @@ public class JSONParser {
                 JSONObject southwest = bounds.getJSONObject("southwest");
                 String latSW = southwest.getString("lat");
                 String lngSW = southwest.getString("lng");
-                CustomPolyline customPolyline = new CustomPolyline();
                 customPolyline.setEncodedPolyline(points);
                 customPolyline.setLatNE(Double.parseDouble(latNE));
                 customPolyline.setLngNE(Double.parseDouble(lngNE));
@@ -43,7 +46,11 @@ public class JSONParser {
                 customPolyline.setLngSV(Double.parseDouble(lngSW));
                 results.add(customPolyline);
             }
+        } else {
+            Toast.makeText(ctx, "Nu se poate genera un traseu pana in acest punct", Toast.LENGTH_LONG).show();
         }
+        CustomPolyline customPolyline = new CustomPolyline();
+        customPolyline.requestStatus = status;
         return results;
     }
 

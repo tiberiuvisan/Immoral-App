@@ -12,6 +12,7 @@ public class CustomPolyline implements Serializable {
     private double lngSV;
     private double lngNE;
     private String encodedPolyline;
+    public String requestStatus;
 
     public CustomPolyline() {
     }

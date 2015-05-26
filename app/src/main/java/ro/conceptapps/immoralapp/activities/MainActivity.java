@@ -53,7 +53,6 @@ import ro.conceptapps.immoralapp.utils.SessionManager;
 public class MainActivity extends ActionBarActivity {
 
     private static final String TAG = "MapActivity";
-    private static final long DELAY_TIME = 5 * 1000;
     private Toolbar toolbar;
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private LatLng latLng;
@@ -70,6 +69,7 @@ public class MainActivity extends ActionBarActivity {
     private BroadcastReceiver polylineBroadcast = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+
             for (int i = 0; i < Data.polylines.size(); i++) {
                 mapUtils.addPolyline(Data.polylines.get(i));
 
@@ -78,6 +78,7 @@ public class MainActivity extends ActionBarActivity {
                     Toast.makeText(MainActivity.this, "In jurul traseului s-au inregistrat " + events + " evenimente imorale", Toast.LENGTH_LONG).show();
                 else
                     Toast.makeText(MainActivity.this, "In jurul traseului nu s-au inregistrat evenimente imorale", Toast.LENGTH_LONG).show();
+
             }
         }
     };

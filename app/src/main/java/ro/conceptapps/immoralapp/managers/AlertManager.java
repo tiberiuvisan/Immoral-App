@@ -39,7 +39,7 @@ public class AlertManager {
     MediaPlayer mp;
     Animation eventDown, eventUp;
     //Distanta de la care utilizatorul se atentioneaza;
-    int WARNING_DISTANCE = 150;
+    int WARNING_DISTANCE = 200;
 
     public AlertManager(Context context, GoogleMap map, LinearLayout alertLayout,
                         TextView alertDistance, TextView alertTitle, TextView alertReportedBy,

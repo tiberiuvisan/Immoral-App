@@ -125,9 +125,11 @@ public class MapUtils {
 
         user.setText(UserDbHelper.getUserName(ctx, pin.userId));
         desc.setText(pin.description);
-        phone.setText(UserDbHelper.getPhone(ctx, pin.userId));
-        makeSmsLink(phone, pin);
-
+        if (UserDbHelper.getPhone(ctx, pin.userId).length() != 0) {
+            phone.setText(UserDbHelper.getPhone(ctx, pin.userId));
+            makeSmsLink(phone, pin);
+        } else phone.setText("Numarul de telefon nu este disponibil");
+        Log.d(TAG, "phone number is: " + phone.getText().toString().length());
         adb.setTitle(pin.type)
                 .setView(view)
                 .autoDismiss(false)

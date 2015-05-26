@@ -55,7 +55,6 @@ public class GPSLocation implements GoogleApiClient.ConnectionCallbacks,
         locationRequest.setInterval(UPDATE_INTERVAL);
         locationRequest.setFastestInterval(FASTEST_INTERVAL);
 
-
         googleApiClient = new GoogleApiClient.Builder(ctx)
                 .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
@@ -63,7 +62,6 @@ public class GPSLocation implements GoogleApiClient.ConnectionCallbacks,
                 .build();
 
         connect();
-
         GPSLocation.lastInstance = this;
     }
 
