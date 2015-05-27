@@ -41,6 +41,7 @@ public class AlertManager {
     //Distanta de la care utilizatorul se atentioneaza;
     int WARNING_DISTANCE = 200;
 
+    // functia care se apeleaza in Main, pentru initializarea clasei de alertManager
     public AlertManager(Context context, GoogleMap map, LinearLayout alertLayout,
                         TextView alertDistance, TextView alertTitle, TextView alertReportedBy,
                         TextView alertDismiss) {
@@ -82,7 +83,12 @@ public class AlertManager {
         markers = PinDbHelper.getPinsFromDatabase(context);
     }
 
-
+    // functia care se apeleaza in main atunci cand se gaseste un punct nou
+    // principiu de functionare: functia primeste o variabila de tipul LatLng denumita latLng ( care este locatia
+    // utilizatorului ). Se calculeaza distanta dintre locatia mea si TOATE evenimentele de pe harta, iar apoi se
+    // sorteaza dupa distanta. Cel mai apropriat punct, va fi primul punct din lista creata;
+    // Apoi, in functie de faptul ca Alerta este sau nu vizibila, sau daca punctul este in raza de avertizare
+    // se va crea alerta corespunzatoare;
     public void checkPoints(LatLng latLng) {
         if (markers.size() != 0) {
             for (int i = 0; i < markers.size(); i++) {
@@ -128,6 +134,8 @@ public class AlertManager {
         alertReportedBy.setText("Raportat de: " + UserDbHelper.getUserName(context, pin.userId));
     }
 
+
+    // obiectul ce compara distantele
     private Comparator<Pin> comparatorDistance = new Comparator<Pin>() {
         @Override
         public int compare(Pin lhs, Pin rhs) {
@@ -139,12 +147,22 @@ public class AlertManager {
         }
     };
 
+
+    //acesta este functia in care se calculeaza numarul de elemente din jurul traseului;
+    /* Se sparge polyline-ul venit in urma requestului catre Google Directions in o multitudine de puncte
+    *  de tipul LatLng.
+    * pentru fiecare punct din polyline pins sa verific fiecare punct din markersForEvents(lista noua creata cu toti pinii afisati pe harta)
+    * se afla cel mai apropriat punct de fiecare punct din polyline pins, iar acesta se verifica daca a fost adaugat
+    * in lista de pini denumita finalPins ( lista unde vor fi tinuti toti pinii din jurul traseului)
+    * in cazul in care a fost gasit, nu se mai adauga inca o data (verificarea se face dupa id-ul pinului)
+    * altfel se adauga
+    * La final, numarul de evenimente din jurul traseului va fi numarul de elemente din lista finalPins
+    * */
     public int getNumberOfEvents(String encodedPolyline, Context context) {
         List<LatLng> polylinePins = PolyUtil.decode(encodedPolyline);
         ArrayList<Pin> markersForEvents = PinDbHelper.getPinsFromDatabase(context);
         ArrayList<Pin> finalPins = new ArrayList<>();
         Pin closestPin;
-        //pentru fiecare punct din polyline pins sa verific fiecare punct
         //din markers for events, iar dupa sa verific fiecare element din markersFinal
         if (polylinePins.size() != 0) {
             for (int i = 0; i < polylinePins.size(); i++) {

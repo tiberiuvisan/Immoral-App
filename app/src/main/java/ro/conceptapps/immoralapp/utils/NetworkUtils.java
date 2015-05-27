@@ -27,7 +27,11 @@ public class NetworkUtils {
     private Context ctx;
     private final int LIST_LIMIT = 25;
 
-
+/*
+* Clasa care transmite requesturile si care construieste linkurile pentru requesturi
+* in momentul in care s-a primit raspunsul, va trimite un broadcast catre activitatea
+* care este programata sa asculte dupa un anumit broadcast
+* */
     public static NetworkUtils getNetworkUtils(Context ctx) {
         if (instance == null) {
             instance = new NetworkUtils(ctx);

@@ -17,12 +17,15 @@ public class RegisterActivity extends ActionBarActivity {
     EditText password;
     EditText phoneNumber;
 
+
+    //se creeaza view-ul
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
         initUI();
     }
+
 
     private void initUI() {
         username = (EditText) findViewById(R.id.user);
@@ -43,7 +46,9 @@ public class RegisterActivity extends ActionBarActivity {
         toolbar.setTitleTextColor(getResources().getColor(R.color.white));
     }
 
-
+    // se apeleaza atunci cand se apasa pe butonul de register
+    // in cazul in care campurile introduse nu sunt goale, se adauga userul in baza de date useri
+    // altfel se afiseaza un mesaj de eroare
     private void registerUser() {
         if (username.getText().toString().length() > 0 && password.getText().toString().length() > 0) {
 

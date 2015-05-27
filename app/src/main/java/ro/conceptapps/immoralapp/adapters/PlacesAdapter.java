@@ -39,6 +39,9 @@ public class PlacesAdapter extends BaseAdapter {
         sp = ctx.getSharedPreferences(Constants.SHARED_PREFS, Context.MODE_PRIVATE);
     }
 
+
+    //aici vei detine date complete despre continutul fiecarui element din lista,
+    //clickul pe fiecare element din lista, dimensiunea listei etc.
     @Override
     public int getCount() {
         return placesArrayList.size();

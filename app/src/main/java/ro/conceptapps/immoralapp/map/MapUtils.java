@@ -56,7 +56,7 @@ public class MapUtils {
 
     }
 
-
+    //functii de zoom
     public void zoomToLocation(LatLng latLng, int zoomLevel) {
 
         map.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.builder()
@@ -68,6 +68,8 @@ public class MapUtils {
         map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
+
+    //functie de setare harta si setarea cluster manager
     public void setUpMap() {
         map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         map.setMyLocationEnabled(true);
@@ -85,6 +87,12 @@ public class MapUtils {
         });
         map.setOnInfoWindowClickListener(mClusterManager);
 
+
+        /*
+        * actiunea ce se va petrece in cazul in care se va da click pe infowindow-ul unui pin
+        * daca tipul pinului este "NAVIGHEAZA", sa creeze traseul
+        * altfel sa afiseze informatii despre eveniment
+        * */
         mClusterManager.setOnClusterItemInfoWindowClickListener(new ClusterManager.OnClusterItemInfoWindowClickListener<Pin>() {
             @Override
             public void onClusterItemInfoWindowClick(Pin pin) {
@@ -113,6 +121,8 @@ public class MapUtils {
         mClusterManager = new ClusterManager<>(ctx, map);
         mClusterManager.setAlgorithm(new GridBasedAlgorithm<Pin>());
     }
+
+
 
     public void infoDialog(Pin pin) {
         AlertDialogWrapper.Builder adb = new AlertDialogWrapper.Builder(new ContextThemeWrapper(ctx, R.style.Theme_AppCompat_Light_Dialog));
@@ -147,6 +157,9 @@ public class MapUtils {
 
 
     }
+
+    //functia care se apeleaza pentru userii care au numarul de telefon introdus
+    //la click pe numar, utilizatorul va fi trimis in aplicatia de mesaje cu mesaj predefinit
 
     public void makeSmsLink(final TextView phone, final Pin pin) {
         phone.setTextColor(ctx.getResources().getColor(R.color.nav_drawer_color));

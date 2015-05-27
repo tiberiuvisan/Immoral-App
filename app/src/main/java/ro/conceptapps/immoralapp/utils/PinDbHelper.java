@@ -12,6 +12,11 @@ import java.util.ArrayList;
 
 public class PinDbHelper extends SQLiteOpenHelper {
 
+
+    /*
+    * Baze de date pentru pini cu functiile de adaugare pin
+    *
+    * */
     private static final String TAG = "PinDbHelper";
 
     private static PinDbHelper mInstance;

@@ -41,7 +41,6 @@ public class LoginActivity extends ActionBarActivity {
     }
 
 
-
     private void initView() {
         usernameEditText = (EditText) findViewById(R.id.username);
         passwordEditText = (EditText) findViewById(R.id.password);
@@ -73,23 +72,21 @@ public class LoginActivity extends ActionBarActivity {
     }
 
     //functia in care se face login
-    //folosim checkLogin pentru a verifica daca utilizatorul cu usernameul si parola introduse exista in baza de date sau nu.
-    //in cazul in care exista, salvam id-ul userului(prin functia saveId) si setam booleana isLogged (prin functia saveLoggedIn) in ca true. ea va retine faptul ca s-a facut autentificarea.
+    //folosim checkLogin pentru a verifica daca utilizatorul cu usernameul si parola
+    //introduse exista in baza de date sau nu.
+    //in cazul in care exista, salvam id-ul userului(prin functia saveId) si setam booleana isLogged
+    //(prin functia saveLoggedIn) in ca true. ea va retine faptul ca s-a facut autentificarea.
     //apoi pornim activitatea principala MainActivity si o inchidem pe cea de Login
     //in cazul in care nu exista userul in baza de date, afisam mesajul "User invalid".
 
     private void doLogin() {
-
-
         if (UserDbHelper.checkLogin(LoginActivity.this, usernameEditText.getText().toString(), passwordEditText.getText().toString()) != -1) {
-            SessionManager.getInstance().saveId(UserDbHelper.getId(LoginActivity.this,usernameEditText.getText().toString()));
+            SessionManager.getInstance().saveId(UserDbHelper.getId(LoginActivity.this, usernameEditText.getText().toString()));
             SessionManager.getInstance().saveLoggedIn(true);
             startActivity(new Intent(this, MainActivity.class));
             this.finish();
         } else {
             Toast.makeText(LoginActivity.this, "User invalid", Toast.LENGTH_SHORT).show();
         }
-
     }
-
 }

@@ -4,11 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-/**
- * Created by andreea on 5/20/2015.
- */
 public class SessionManager  {
-
+/* locul unde se salveaza parola*/
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
 

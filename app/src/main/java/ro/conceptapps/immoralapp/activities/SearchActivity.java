@@ -24,7 +24,13 @@ public class SearchActivity extends ActionBarActivity {
     private String searchedText;
     private PlacesAdapter placesAdapter;
 
+    //ELEMENTELE VIEW-ULUI SI TOATE ON CLICK-URILE SUNT GESTIONATE DE ADAPTORUL DE LISTA PlacesAdapter.java
+
     //API BROADCAST RECEIVERS
+    //se apeleaza DOAR ATUNCI cand va primi broadcast-ul din NetworkUtils, functia de getPlaces();
+
+    //va adauga elementele primite de pe server in lista creeata pe onCreate
+    //de asemenea elementele din lista sunt sortate dupa distanta fata de locatia utilizatorului;
     private BroadcastReceiver getPlacesReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -39,6 +45,7 @@ public class SearchActivity extends ActionBarActivity {
         }
     };
 
+    //se creaza view-ul, elementul principal fiind ListView, care va contine lista de elemente.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

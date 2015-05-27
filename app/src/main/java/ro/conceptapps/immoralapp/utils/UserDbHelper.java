@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class UserDbHelper extends SQLiteOpenHelper {
-
+/*baza de date pentru useri*/
     private static UserDbHelper mInstance;
     private static SQLiteDatabase db;
     private static String TAG = "UserDbHelper";

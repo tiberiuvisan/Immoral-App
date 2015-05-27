@@ -67,7 +67,10 @@ public class MainActivity extends ActionBarActivity {
     private LinearLayout alertView;
     private AlertManager alertManager;
 
-//in momentul in care primeste broadcast-ul (trimis din network utils de functia getDirections)  afiseaza polyline-ul si numarul de evenimente inregistrat in jurul traseului
+    //in momentul in care primeste broadcast-ul (trimis din network utils de functia getDirections)
+    //prin metoda context.sendBroadcast()
+    // afiseaza polyline-ul si numarul de evenimente
+    // inregistrat in jurul fiecarui punct primit de pe server, ce formeaza traseul.
     private BroadcastReceiver polylineBroadcast = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -84,7 +87,8 @@ public class MainActivity extends ActionBarActivity {
             }
         }
     };
-//genereaza view-ul, folosim layout-ul activity_main
+
+    //genereaza view-ul, folosim layout-ul activity_main
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,9 +97,12 @@ public class MainActivity extends ActionBarActivity {
         sp = getSharedPreferences(Constants.SHARED_PREFS, Context.MODE_PRIVATE);
         initAlertViews();
         alertView.setVisibility(View.GONE);
+
+        // se intializeaza clasa ajutatoare AlertManager; primeste context, harta si layout-ul de alertare
         alertManager = new AlertManager(MainActivity.this, mMap, alertView, alertDistance,
                 alertTitle, alertReportedBy, alertDismiss);
         setUpMapIfNeeded();
+        //se adauga pinii din baza de date
         markers = PinDbHelper.getPinsFromDatabase(this);
         handleIntent(getIntent());
 
@@ -128,7 +135,8 @@ public class MainActivity extends ActionBarActivity {
         super.onPause();
     }
 
-
+    // functia de verificare daca harta este creata;
+    // daca nu este (este nula, deci nu creata) se va genera una.
     private void setUpMapIfNeeded() {
         // Do a null check to confirm that we have not already instantiated the map.
         if (mMap == null) {
@@ -142,6 +150,9 @@ public class MainActivity extends ActionBarActivity {
             }
         }
     }
+
+    // functia care adauga punctele din baza de date pe harta ( functiile ajutatoare de adaugare puncte
+    // sunt din mapUtils, se vad mai jos care)
 
     private void setUpMap() {
         mapUtils.setUpMap();
@@ -168,7 +179,7 @@ public class MainActivity extends ActionBarActivity {
         });
     }
 
-    //salveaza ultima locatie din GPS
+    //salveaza ultima locatie din GPS periodic
     private void getLocation() {
         Log.d(TAG, "in get Location");
         new GPSLocation(this, new GPSLocation.LocationResult() {
@@ -261,7 +272,7 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
-//creeaza meniul de search din toolbar
+    //creeaza meniul de search din toolbar si ia textul din el ( in cazul in care este introdus)
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
@@ -327,6 +338,11 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
+    /* Se asteapta orice intent lansat si se verifica daca actiunea acestuia este egala cu
+        ACTION_SEARCH (asta face handle intent).
+        In cazul in care este egal, se lanseaza noua activitate de search care va primi si
+        Query din aceasta activitate (query este textul introdus in campul de search)
+    * */
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -340,11 +356,17 @@ public class MainActivity extends ActionBarActivity {
             Log.d(TAG, query);
             final Intent i = new Intent(this, SearchActivity.class);
             i.putExtra(Constants.SEARCH_TEXT, query);
+            // startActivity for result(i,100) = lanseaza activitate si asteapta rezultatul 100
+            // in momentul in care Main a primit rezultatul, se va apela OnActivityResult;
             startActivityForResult(i, 100);
             Log.d(TAG, "in handle intent startActivity");
         }
     }
 
+
+    //daca rezultatul primit vine din activitaatea de search, si resultCode-ul trimis de activitatea de Search
+    //este RESULT_OK, atunci se va adauga pinul pe harta (cel trimis de search) cu optiunea de a crea traseu pana in punctul
+    //respectiv.
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         String type = "Navigheaza";
@@ -365,11 +387,7 @@ public class MainActivity extends ActionBarActivity {
             onResultPin.description = "Navigheaza pana in acest punct";
             mapUtils.addToCluster(onResultPin);
             mapUtils.recluster();
-           /* if (marker != null) marker.remove();
-            marker = mMap.addMarker(new MarkerOptions().draggable(true)
-                    .position(new LatLng(returnLatitude, returnLongitude)));
-            marker.setSnippet("Navigheaza pana la aceasta pozitie");
-            marker.setTitle("NAVIGARE");*/
+
             Log.d(TAG, "Position on return: " + new LatLng(returnLatitude, returnLongitude));
 
             if (requestCode == 100) {

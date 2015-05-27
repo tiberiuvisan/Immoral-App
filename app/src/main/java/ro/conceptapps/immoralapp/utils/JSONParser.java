@@ -19,6 +19,12 @@ public class JSONParser {
 
     private static final String TAG = "JSONParser";
 
+    /*
+    * Aceasta este clasa ajutatoare care transforma datele primite de la server in format string
+    * in obiecte ce pot fi adaugate pe harta si folosite
+    * Functiile din aceasta clasa sunt apelate din clasa network utils
+    * */
+
 
     public static ArrayList<CustomPolyline> parseDirections(Context ctx, String response) throws JSONException {
         ArrayList<CustomPolyline> results = new ArrayList<>();

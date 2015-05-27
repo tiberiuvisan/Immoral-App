@@ -8,13 +8,14 @@ import android.os.Handler;
 import ro.conceptapps.immoralapp.R;
 import ro.conceptapps.immoralapp.utils.SessionManager;
 
-/**
- * Created by andreea on 5/21/2015.
- */
 public class SplashActivity extends Activity {
 
     boolean isShown = true;
     @Override
+
+
+    // Exista aplicatia care se lanseaza prima;
+    // Decide (in functie daca utilizatorul este logat sau nu) ce activitate porneste urmatoarea;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash_screen);
