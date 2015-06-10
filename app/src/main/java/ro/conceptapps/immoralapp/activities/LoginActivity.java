@@ -77,7 +77,7 @@ public class LoginActivity extends ActionBarActivity {
     //in cazul in care exista, salvam id-ul userului(prin functia saveId) si setam booleana isLogged
     //(prin functia saveLoggedIn) in ca true. ea va retine faptul ca s-a facut autentificarea.
     //apoi pornim activitatea principala MainActivity si o inchidem pe cea de Login
-    //in cazul in care nu exista userul in baza de date, afisam mesajul "User invalid".
+    //in cazul in care nu exista userul in baza de date, afisam mesajul "Utilizator gresit".
 
     private void doLogin() {
         if (UserDbHelper.checkLogin(LoginActivity.this, usernameEditText.getText().toString(), passwordEditText.getText().toString()) != -1) {
@@ -86,7 +86,7 @@ public class LoginActivity extends ActionBarActivity {
             startActivity(new Intent(this, MainActivity.class));
             this.finish();
         } else {
-            Toast.makeText(LoginActivity.this, "User invalid", Toast.LENGTH_SHORT).show();
+            Toast.makeText(LoginActivity.this, "Utilizator gresit", Toast.LENGTH_SHORT).show();
         }
     }
 }
