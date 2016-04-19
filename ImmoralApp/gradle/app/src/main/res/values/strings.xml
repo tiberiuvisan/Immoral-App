@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">ImmoralApp</string>
+    <string name="wellcome">Bun venit!</string>
+    <string name="action_search">Cautare</string>
+    <string name="action_logout">Logout</string>
+    <string name="distance_km">%1$.1f Km</string>
+    <string name="distance_m">%1$.1f m</string>
+
+    <string-array name="type">
+        <item>Cazuri:</item>
+        <item>Violenta verbala</item>
+-       <item>Vanzatori cu un comportamnet inadecvat</item>
+-       <item>Gesturi inadecvate</item>
+-       <item>Oameni care nu isi curata strada</item>
+-       <item>Parcagii</item>
+-       <item>Consum droguri</item>
+-       <item>Publicitate sexuala</item>
+-       <item>Stapan cu caini fara botnita</item>
+        <item>Altele</item>
+    </string-array>
+</resources>
