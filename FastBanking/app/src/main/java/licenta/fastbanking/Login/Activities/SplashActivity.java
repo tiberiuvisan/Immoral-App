@@ -45,7 +45,7 @@ public class SplashActivity extends Activity {
 
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    startMainActivity();
+                    startLoginActivity();
                 }
 
                 @Override
@@ -66,6 +66,18 @@ public class SplashActivity extends Activity {
             @Override
             public void run() {
                 Intent i = new Intent(SplashActivity.this, MainActivity.class);
+                startActivity(i);
+                SplashActivity.this.finish();
+            }
+        }, ANIMATION_DURATION);
+
+    }
+
+    private void startLoginActivity() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Intent i = new Intent(SplashActivity.this, LoginActivity.class);
                 startActivity(i);
                 SplashActivity.this.finish();
             }

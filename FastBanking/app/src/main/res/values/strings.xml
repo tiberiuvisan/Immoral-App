@@ -1,4 +1,15 @@
 <resources>
     <string name="app_name">FastBanking</string>
     <string name="title_activity_main">Main</string>
+
+    <!--Register-->
+    <string name="title_activity_register">Inregistrare</string>
+    <string name="username_hint">Nume Utilizator</string>
+    <string name="password_hint">Parola</string>
+    <string name="phone_hint">Numar de telefon</string>
+    <string name="register_success">Utilizatorul a fost adaugat cu success</string>
+    <string name="register_error">Nu ati completat toate campurile</string>
+
+    <!--Login-->
+    <string name="title_activity_login">Autentificare</string>
 </resources>
