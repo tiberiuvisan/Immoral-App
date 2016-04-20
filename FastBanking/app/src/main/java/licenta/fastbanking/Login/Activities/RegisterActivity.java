@@ -8,7 +8,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import licenta.fastbanking.Map.MainActivity;
 import licenta.fastbanking.R;
 import licenta.fastbanking.Utils.UserDbHelper;
 
@@ -19,6 +18,7 @@ public class RegisterActivity extends AppCompatActivity{
     EditText user;
     EditText password;
     EditText phone;
+    Button register;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -33,7 +33,7 @@ public class RegisterActivity extends AppCompatActivity{
         password = (EditText)findViewById(R.id.password);
         phone = (EditText)findViewById(R.id.phone);
 
-        final Button register = (Button)findViewById(R.id.btn_register);
+        register = (Button)findViewById(R.id.btn_register);
 
         register.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -49,15 +49,15 @@ public class RegisterActivity extends AppCompatActivity{
 
             UserDbHelper.addUserToDatabase(this, user.getText().toString(), password.getText().toString(), phone.getText().toString());
             Toast.makeText(this, R.string.register_success, Toast.LENGTH_SHORT).show();
-            startMainActivity();
+            startLoginActivity();
         } else {
             Toast.makeText(this, R.string.register_error, Toast.LENGTH_SHORT).show();
         }
 
     }
 
-    private void startMainActivity() {
-                Intent i = new Intent(RegisterActivity.this, MainActivity.class);
+    private void startLoginActivity() {
+                Intent i = new Intent(RegisterActivity.this, LoginActivity.class);
                 startActivity(i);
                 RegisterActivity.this.finish();
 

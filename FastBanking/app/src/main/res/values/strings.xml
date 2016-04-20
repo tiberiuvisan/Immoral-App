@@ -12,4 +12,5 @@
 
     <!--Login-->
     <string name="title_activity_login">Autentificare</string>
+    <string name="login_error">Utilizator sau parola gresite</string>
 </resources>

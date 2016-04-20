@@ -45,7 +45,11 @@ public class SplashActivity extends Activity {
 
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    startLoginActivity();
+                  /*  if(SessionManager.getInstance().isLoggedIn()){
+                        startMainActivity();
+                    }else {*/
+                        startLoginActivity();
+                   // }
                 }
 
                 @Override

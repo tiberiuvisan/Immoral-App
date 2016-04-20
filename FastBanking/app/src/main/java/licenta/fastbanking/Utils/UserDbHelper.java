@@ -79,4 +79,35 @@ public class UserDbHelper extends SQLiteOpenHelper {
         values.put(TABLE_COL_PHONENUMBER, phoneNumber);
         db.insert(TABLE_USERS, null, values);
     }
+
+    public static int checkLogin(Context context, String user, String password) {
+        getInstance(context);
+        Cursor cursor = db.query(TABLE_USERS, null, null, null, null, null, null);
+        cursor.moveToFirst();
+        int isLoginCorrect = -1;
+        while (!cursor.isAfterLast()) {
+            int id = cursor.getInt(0);
+            String userDB = cursor.getString(1);
+            String passDB = cursor.getString(2);
+            if (userDB.equals(user) && passDB.equals(password))
+                isLoginCorrect = id;
+            cursor.moveToNext();
+        }
+        cursor.close();
+        return isLoginCorrect;
+    }
+
+    public static int getId(Context context, String user){
+        getInstance(context);
+        int id=-1;
+        Cursor cursor = db.query(TABLE_USERS,TABLE_ALL_COLS_USERS,TABLE_COL_USER+"='"+user+"'",null,null,null,null);
+        if(cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                id = cursor.getInt(0);
+                cursor.moveToNext();
+            }
+        }
+        cursor.close();
+        return id;
+    }
 }
