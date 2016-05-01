@@ -1,11 +1,17 @@
 package licenta.fastbanking.Map;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.EditText;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -13,11 +19,11 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 
-import licenta.fastbanking.Managers.SessionManager;
-import licenta.fastbanking.Objects.Pin;
+import licenta.fastbanking.Objects.Bank;
 import licenta.fastbanking.R;
+import licenta.fastbanking.Utils.BankDbHelper;
 import licenta.fastbanking.Utils.Constants;
-import licenta.fastbanking.Utils.PinDbHelper;
+import licenta.fastbanking.Utils.DialogBuilder;
 
 public class MainActivity extends FragmentActivity {
 
@@ -26,7 +32,7 @@ public class MainActivity extends FragmentActivity {
     private GoogleMap mMap;
     private MapUtils mapUtils;
     private LatLng latLng;
-    private ArrayList<Pin>pins;
+    private ArrayList<Bank> banks;
     SharedPreferences sp;
 
     @Override
@@ -35,7 +41,7 @@ public class MainActivity extends FragmentActivity {
         setContentView(R.layout.activity_main);
         sp = getSharedPreferences(Constants.SHARED_PREFS, Context.MODE_PRIVATE);
         setupMapIfNeeded();
-        pins = PinDbHelper.getPinsFromDatabase(this);
+        banks = BankDbHelper.getBanksFromDatabase(this);
 
     }
 
@@ -81,8 +87,8 @@ public class MainActivity extends FragmentActivity {
                 LatLng centru = new LatLng(45.40, 25.10);
                 mapUtils.setCenter(centru);
                 getLocation();
-                for (Pin pin : pins) {
-                    mapUtils.addToCluster(pin);
+                for (Bank bank : banks) {
+                    mapUtils.addToCluster(bank);
                     mapUtils.recluster();
                 }
                 mapUtils.recluster();
@@ -115,16 +121,57 @@ public class MainActivity extends FragmentActivity {
     }
 
     private void addMarker(final LatLng latLng) {
-        final Pin pin = new Pin();
 
-        PinDbHelper.addPinToDatabase(MainActivity.this, SessionManager.getInstance().getId(), "lala", "lalala", latLng.latitude, latLng.longitude);
-        pin.lat = latLng.latitude;
-        pin.lng = latLng.longitude;
-        pin.description = "lalala";
-        pin.type = "lala";
-        pin.userId = SessionManager.getInstance().getId();
-        mapUtils.addToCluster(pin);
-        mapUtils.recluster();
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(MainActivity.this, R.style.Theme_AppCompat_Light_Dialog));
+        LayoutInflater inflater = (LayoutInflater) MainActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.dialog_add_bank, null);
+
+        final EditText bank_name = (EditText)view.findViewById(R.id.bank_name);
+        final EditText counters_number = (EditText)view.findViewById(R.id.bank_counters_number);
+        final EditText waiting_time = (EditText)view.findViewById(R.id.bank_wait_time);
+        final EditText total_people = (EditText)view.findViewById(R.id.bank_total_people);
+        final Bank bank = new Bank();
+
+        builder.setView(view)
+                .setCancelable(false)
+                .setPositiveButton(R.string.btn_add, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        DialogBuilder.disableOkButton(dialog);
+                        String bankName = bank_name.getText().toString();
+                        int countersNumber = 0;
+                        int waitingTime  = 0;
+                        int totalPeople = 0;
+
+                        if(!counters_number.getText().toString().equals("")) {
+                            countersNumber = Integer.parseInt(counters_number.getText().toString());
+                        }
+                        if(!waiting_time.getText().toString().equals("")) {
+                            waitingTime = Integer.parseInt(waiting_time.getText().toString());
+                        }
+                        if(!total_people.getText().toString().equals("")){
+                            totalPeople = Integer.parseInt(total_people.getText().toString());
+                        }
+                        BankDbHelper.addBankToDatabase(MainActivity.this, bankName, countersNumber, waitingTime, totalPeople, latLng.latitude, latLng.longitude);
+
+                        bank.lat = latLng.latitude;
+                        bank.lng = latLng.longitude;
+                        bank.name = bankName;
+                        bank.countersNumber = countersNumber;
+                        bank.waitTime = waitingTime;
+                        bank.totalPeople = totalPeople;
+                        mapUtils.addToCluster(bank);
+                        mapUtils.recluster();
+                        dialog.dismiss();
+                    }
+                }).setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        }).create().show();
+
     }
 
 

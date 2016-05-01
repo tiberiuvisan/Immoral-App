@@ -13,4 +13,13 @@
     <!--Login-->
     <string name="title_activity_login">Autentificare</string>
     <string name="login_error">Utilizator sau parola gresite</string>
+
+    <!--Add bank-->
+    <string name="title_add_bank">Adaugare Banca</string>
+    <string name="bank_name">Denumire</string>
+    <string name="counters_number">Numar ghisee</string>
+    <string name="wait_time">Timp mediu de asteptare (min)</string>
+    <string name="total_people">Numar total de persoane</string>
+    <string name="btn_add">Adaugare</string>
+    <string name="btn_cancel">Anulare</string>
 </resources>

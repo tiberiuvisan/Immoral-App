@@ -8,23 +8,24 @@ import java.io.Serializable;
 /**
  * Created by Andreea on 4/20/2016.
  */
-public class Pin implements Serializable, ClusterItem {
+public class Bank implements Serializable, ClusterItem {
 
     public int id;
-    public int userId;
-    public String type;
-    public String description;
+    public String name;
+    public int countersNumber;
+    public int waitTime;
+    public int totalPeople;
     public double lat;
-    public float distance;
     public double lng;
 
 
     @Override
     public String toString() {
         return id + ", "
-                +userId + ", "
-                +type +", "
-                +description +", "
+                +name + ", "
+                +countersNumber +", "
+                +waitTime +", "
+                +totalPeople+", "
                 +lat +", "
                 +lng;
     }

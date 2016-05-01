@@ -8,22 +8,22 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 
-import licenta.fastbanking.Objects.Pin;
+import licenta.fastbanking.Objects.Bank;
 import licenta.fastbanking.R;
 
-public class PinRenderer extends DefaultClusterRenderer<Pin> {
+public class PinRenderer extends DefaultClusterRenderer<Bank> {
 
     Context context;
 
-    public PinRenderer(Context context, GoogleMap map, ClusterManager<Pin> clusterManager) {
+    public PinRenderer(Context context, GoogleMap map, ClusterManager<Bank> clusterManager) {
         super(context, map, clusterManager);
         this.context = context;
     }
 
     @Override
-    protected void onBeforeClusterItemRendered(Pin item, MarkerOptions markerOptions) {
+    protected void onBeforeClusterItemRendered(Bank item, MarkerOptions markerOptions) {
         super.onBeforeClusterItemRendered(item, markerOptions);
-        markerOptions.title(item.type);
+        markerOptions.title(item.name);
         markerOptions.snippet("apasati pentru detalii");
         markerOptions.draggable(false);
         markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.map_pin));

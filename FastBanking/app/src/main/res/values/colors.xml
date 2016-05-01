@@ -5,4 +5,5 @@
     <color name="colorAccent">#FF4081</color>
     <color name="fast_green">#1B544B</color>
     <color name="fast_green_alpha">#991B544B</color>
+    <color name="fast_green_light">#63A375</color>
 </resources>

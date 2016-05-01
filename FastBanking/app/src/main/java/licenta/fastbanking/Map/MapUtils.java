@@ -1,21 +1,10 @@
 package licenta.fastbanking.Map;
 
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.location.Location;
-import android.net.Uri;
 import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.ContextThemeWrapper;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -24,16 +13,12 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.maps.android.PolyUtil;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.algo.GridBasedAlgorithm;
 
-import licenta.fastbanking.Objects.Pin;
-import licenta.fastbanking.R;
+import licenta.fastbanking.Objects.Bank;
 import licenta.fastbanking.Utils.Constants;
-import licenta.fastbanking.Utils.UserDbHelper;
 
 public class MapUtils {
 
@@ -42,7 +27,7 @@ public class MapUtils {
     private GoogleMap map;
     private Context ctx;
     private SharedPreferences sp;
-    private ClusterManager<Pin> mClusterManager;
+    private ClusterManager<Bank> mClusterManager;
     Polyline trackPolyline;
 
 
@@ -90,9 +75,9 @@ public class MapUtils {
         * daca tipul pinului este "NAVIGHEAZA", sa creeze traseul
         * altfel sa afiseze informatii despre eveniment
         * */
-        /*mClusterManager.setOnClusterItemInfoWindowClickListener(new ClusterManager.OnClusterItemInfoWindowClickListener<Pin>() {
+        /*mClusterManager.setOnClusterItemInfoWindowClickListener(new ClusterManager.OnClusterItemInfoWindowClickListener<Bank>() {
             @Override
-            public void onClusterItemInfoWindowClick(Pin pin) {
+            public void onClusterItemInfoWindowClick(Bank pin) {
                 if (pin.type.equals("Navigheaza")) {
                     NetworkUtils.getNetworkUtils(ctx).getDirections(pin.getPosition(),
                             new LatLng(GPSLocation.getLastInstance().lastLocation.getLatitude(),
@@ -103,9 +88,9 @@ public class MapUtils {
 
         map.setOnMarkerClickListener(mClusterManager);
 
-        mClusterManager.setOnClusterClickListener(new ClusterManager.OnClusterClickListener<Pin>() {
+        mClusterManager.setOnClusterClickListener(new ClusterManager.OnClusterClickListener<Bank>() {
             @Override
-            public boolean onClusterClick(Cluster<Pin> cluster) {
+            public boolean onClusterClick(Cluster<Bank> cluster) {
                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(cluster.getPosition(), map.getCameraPosition().zoom + 1), 300, null);
                 return true;
             }
@@ -116,12 +101,12 @@ public class MapUtils {
 
     private void setupClusterManager() {
         mClusterManager = new ClusterManager<>(ctx, map);
-        mClusterManager.setAlgorithm(new GridBasedAlgorithm<Pin>());
+        mClusterManager.setAlgorithm(new GridBasedAlgorithm<Bank>());
     }
 
 
 
-    /*public void infoDialog(Pin pin) {
+    /*public void infoDialog(Bank pin) {
         AlertDialogWrapper.Builder adb = new AlertDialogWrapper.Builder(new ContextThemeWrapper(ctx, R.style.Theme_AppCompat_Light_Dialog));
         LayoutInflater inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.popup_infowindow, null);
@@ -158,7 +143,7 @@ public class MapUtils {
     //functia care se apeleaza pentru userii care au numarul de telefon introdus
     //la click pe numar, utilizatorul va fi trimis in aplicatia de mesaje cu mesaj predefinit
 
-    /*public void makeSmsLink(final TextView phone, final Pin pin) {
+    /*public void makeSmsLink(final TextView phone, final Bank pin) {
         phone.setTextColor(ctx.getResources().getColor(R.color.nav_drawer_color));
         phone.setPaintFlags(Paint.UNDERLINE_TEXT_FLAG);
         phone.setClickable(true);
@@ -174,7 +159,7 @@ public class MapUtils {
 
     }*/
 
-    public void addToCluster(Pin p) {
+    public void addToCluster(Bank p) {
         mClusterManager.addItem(p);
     }
 
@@ -189,8 +174,8 @@ public class MapUtils {
         map.animateCamera(CameraUpdateFactory.newLatLngBounds(customPolyline.getLatLngBounds(), (int) convertDpToPixel(30, ctx)));
     }*/
 
-    public void removeFromCluster(Pin pin) {
-        mClusterManager.removeItem(pin);
+    public void removeFromCluster(Bank bank) {
+        mClusterManager.removeItem(bank);
     }
 
     public void recluster() {
