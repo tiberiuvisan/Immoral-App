@@ -26,7 +26,20 @@ public class PinRenderer extends DefaultClusterRenderer<Bank> {
         markerOptions.title(item.name);
         markerOptions.snippet("apasati pentru detalii");
         markerOptions.draggable(false);
-        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.map_pin));
+        changePin(item, markerOptions);
+
+    }
+
+
+    public void changePin(Bank bank, MarkerOptions markerOptions){
+        if(bank.calculateWaitTime()<5){
+            markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.pin_green));
+        }else if(bank.calculateWaitTime()<15){
+            markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.pin_orange));
+        }else{
+            markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.pin_red));
+        }
+
     }
 
 

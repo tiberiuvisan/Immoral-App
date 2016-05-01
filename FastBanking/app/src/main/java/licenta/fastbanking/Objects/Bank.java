@@ -10,6 +10,8 @@ import java.io.Serializable;
  */
 public class Bank implements Serializable, ClusterItem {
 
+
+
     public int id;
     public String name;
     public int countersNumber;
@@ -17,6 +19,14 @@ public class Bank implements Serializable, ClusterItem {
     public int totalPeople;
     public double lat;
     public double lng;
+
+    public int calculateWaitTime(){
+        int totalWait=0;
+
+        totalWait = (this.waitTime*this.totalPeople)/this.countersNumber;
+
+        return totalWait;
+    }
 
 
     @Override
