@@ -19,11 +19,13 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 
+import licenta.fastbanking.Managers.SessionManager;
 import licenta.fastbanking.Objects.Bank;
 import licenta.fastbanking.R;
 import licenta.fastbanking.Utils.BankDbHelper;
 import licenta.fastbanking.Utils.Constants;
 import licenta.fastbanking.Utils.DialogBuilder;
+import licenta.fastbanking.Utils.UserDbHelper;
 
 public class MainActivity extends FragmentActivity {
 
@@ -98,7 +100,11 @@ public class MainActivity extends FragmentActivity {
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(LatLng latLng) {
-                addMarker(latLng);
+                if(UserDbHelper.checkAdmin(MainActivity.this, SessionManager.getInstance().getId())) {
+                    addMarker(latLng);
+                }else{
+                    return;
+                }
 
             }
         });

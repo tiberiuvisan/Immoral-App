@@ -9,6 +9,7 @@
     <string name="phone_hint">Numar de telefon</string>
     <string name="register_success">Utilizatorul a fost adaugat cu success</string>
     <string name="register_error">Nu ati completat toate campurile</string>
+    <string name="admin_user">Administrator</string>
 
     <!--Login-->
     <string name="title_activity_login">Autentificare</string>
@@ -22,4 +23,6 @@
     <string name="total_people">Numar total de persoane</string>
     <string name="btn_add">Adaugare</string>
     <string name="btn_cancel">Anulare</string>
+    <string name="btn_ok">OK</string>
+
 </resources>

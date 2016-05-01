@@ -46,6 +46,19 @@
         android:hint="@string/phone_hint"
         android:inputType="phone"/>
 
+    <CheckBox
+        android:id="@+id/isAdmin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:text="@string/admin_user"
+        android:textSize="15sp"
+
+        />
+
     <Button
         android:id="@+id/btn_register"
         android:layout_width="match_parent"
@@ -60,6 +73,8 @@
         android:textSize="@dimen/btn_text_size"
 
         />
+
+
 
 
 </LinearLayout>

@@ -22,8 +22,10 @@ public class UserDbHelper extends SQLiteOpenHelper {
     private static final String TABLE_COL_USER = "table_col_user";
     private static final String TABLE_COL_PASSWORD = "table_col_pass";
     private static final String TABLE_COL_PHONENUMBER = "table_col_phone";
+    private static final String TABLE_COL_ADMIN = "table_col_admin";
 
-    private static final String[] TABLE_ALL_COLS_USERS = {TABLE_COL_ID, TABLE_COL_USER, TABLE_COL_PASSWORD, TABLE_COL_PHONENUMBER};
+
+    private static final String[] TABLE_ALL_COLS_USERS = {TABLE_COL_ID, TABLE_COL_USER, TABLE_COL_PASSWORD, TABLE_COL_PHONENUMBER, TABLE_COL_ADMIN};
     private static final String DATABASE_CREATE = ""
             + "CREATE TABLE "
             + TABLE_USERS
@@ -35,7 +37,9 @@ public class UserDbHelper extends SQLiteOpenHelper {
             + TABLE_COL_PASSWORD
             + " TEXT, "
             + TABLE_COL_PHONENUMBER
-            + " TEXT"
+            + " TEXT, "
+            +TABLE_COL_ADMIN
+            +" INTEGER"
             + " );";
 
     public UserDbHelper(Context context) {
@@ -70,13 +74,18 @@ public class UserDbHelper extends SQLiteOpenHelper {
         return id;
     }
 
-    public static void addUserToDatabase(Context context, String user, String password, String phoneNumber) {
+    public static void addUserToDatabase(Context context, String user, String password, String phoneNumber, boolean isAdmin) {
         getInstance(context);
         ContentValues values = new ContentValues();
         values.put(TABLE_COL_ID, getLastID(context));
         values.put(TABLE_COL_USER, user);
         values.put(TABLE_COL_PASSWORD, password);
         values.put(TABLE_COL_PHONENUMBER, phoneNumber);
+        if(isAdmin){
+            values.put(TABLE_COL_ADMIN, 1);
+        }else{
+            values.put(TABLE_COL_ADMIN, 0);
+        }
         db.insert(TABLE_USERS, null, values);
     }
 
@@ -95,6 +104,26 @@ public class UserDbHelper extends SQLiteOpenHelper {
         }
         cursor.close();
         return isLoginCorrect;
+    }
+
+    public static boolean checkAdmin(Context context, int id){
+        getInstance(context);
+        boolean isAdmin = false;
+        Cursor cursor = db.query(TABLE_USERS,TABLE_ALL_COLS_USERS,TABLE_COL_ID+"='"+id+"'",null,null,null,null);
+        if(cursor.moveToFirst()){
+            while (!cursor.isAfterLast()){
+                if(cursor.getInt(4)==0){
+                    isAdmin = false;
+                }else{
+                    isAdmin = true;
+                }
+                cursor.moveToNext();
+            }
+        }
+        cursor.close();
+
+
+        return isAdmin;
     }
 
     public static int getId(Context context, String user){

@@ -19,6 +19,7 @@ import com.google.maps.android.clustering.algo.GridBasedAlgorithm;
 
 import licenta.fastbanking.Objects.Bank;
 import licenta.fastbanking.Utils.Constants;
+import licenta.fastbanking.Utils.DialogBuilder;
 
 public class MapUtils {
 
@@ -68,6 +69,12 @@ public class MapUtils {
             }
         });
         map.setOnInfoWindowClickListener(mClusterManager);
+        mClusterManager.setOnClusterItemInfoWindowClickListener(new ClusterManager.OnClusterItemInfoWindowClickListener<Bank>() {
+            @Override
+            public void onClusterItemInfoWindowClick(Bank bank) {
+                DialogBuilder.DialogBankInfo(ctx, bank);
+            }
+        });
 
 
         /*
