@@ -32,7 +32,7 @@
             android:value="@string/google_maps_key"/>
 
         <activity
-            android:name=".Login.Activities.SplashActivity"
+            android:name=".Activities.SplashActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -49,13 +49,13 @@
 
 
         <activity
-            android:name=".Login.Activities.LoginActivity"
+            android:name=".Activities.LoginActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
         </activity>
 
         <activity
-            android:name=".Login.Activities.RegisterActivity"
+            android:name=".Activities.RegisterActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
         </activity>

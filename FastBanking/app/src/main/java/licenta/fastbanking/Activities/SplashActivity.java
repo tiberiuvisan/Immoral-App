@@ -1,4 +1,4 @@
-package licenta.fastbanking.Login.Activities;
+package licenta.fastbanking.Activities;
 
 import android.animation.Animator;
 import android.annotation.TargetApi;
@@ -8,6 +8,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.widget.TextView;
 
 import licenta.fastbanking.Map.MainActivity;
@@ -48,8 +50,9 @@ public class SplashActivity extends Activity {
                   /*  if(SessionManager.getInstance().isLoggedIn()){
                         startMainActivity();
                     }else {*/
-                        startLoginActivity();
-                   // }
+                    startLoginActivity();
+
+                    // }
                 }
 
                 @Override
@@ -79,11 +82,23 @@ public class SplashActivity extends Activity {
 
     private void startLoginActivity() {
         new Handler().postDelayed(new Runnable() {
+            @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
             @Override
             public void run() {
                 Intent i = new Intent(SplashActivity.this, LoginActivity.class);
-                startActivity(i);
-                SplashActivity.this.finish();
+                i.putExtra("title", "TITLE");
+
+                ActivityOptionsCompat options = ActivityOptionsCompat.
+                        makeSceneTransitionAnimation(SplashActivity.this, logo, "logo");
+                ActivityCompat.startActivity(SplashActivity.this, i, options.toBundle());
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        SplashActivity.this.finish();
+                    }
+                },1000);
+
             }
         }, ANIMATION_DURATION);
 

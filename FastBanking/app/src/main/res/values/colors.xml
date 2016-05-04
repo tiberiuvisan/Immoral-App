@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#89326B</color>
-    <color name="colorPrimaryDark">#5E2149</color>
-    <color name="colorAccent">#FF4081</color>
-    <color name="fast_green">#1B544B</color>
-    <color name="fast_green_alpha">#991B544B</color>
-    <color name="fast_green_light">#2E914A</color>
+    <color name="colorPrimary">#66234f</color>
+    <color name="colorPrimaryDark">#4e1c3c</color>
+    <color name="colorAccent">#c33163</color>
+    <color name="fast_yellow">#8b7c0f</color>
+    <color name="fast_yellow_alpha">#998b7c0f</color>
+    <color name="fast_yellow_light">#e3cb1b</color>
     <color name="fast_orange">#E8793A</color>
     <color name="fast_red">#C61F30</color>
 </resources>

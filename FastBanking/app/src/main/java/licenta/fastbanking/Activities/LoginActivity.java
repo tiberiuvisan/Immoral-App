@@ -1,11 +1,17 @@
-package licenta.fastbanking.Login.Activities;
+package licenta.fastbanking.Activities;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.TextInputEditText;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import licenta.fastbanking.Managers.SessionManager;
@@ -20,58 +26,61 @@ import licenta.fastbanking.Utils.UserDbHelper;
 public class LoginActivity extends AppCompatActivity {
 
 
-    EditText username;
-    EditText password;
-    Button login;
-    Button register;
+    private TextInputEditText username;
+    private TextInputEditText password;
+    private Button login;
+    private Button register;
+    private TextView title;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        ViewCompat.setTransitionName(findViewById(R.id.login_title),"logo");
         initialiseUI();
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(getString(R.string.title_activity_login));
+        }
 
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        username.setText("");
-        password.setText("");
-        username.requestFocus();
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void initialiseUI() {
-        username = (EditText)findViewById(R.id.username);
-        password = (EditText)findViewById(R.id.password);
-        login = (Button)findViewById(R.id.btn_login);
-        register = (Button)findViewById(R.id.btn_register);
-
+        username = (TextInputEditText) findViewById(R.id.username);
+        password = (TextInputEditText) findViewById(R.id.password);
+        login = (Button) findViewById(R.id.btn_login);
+        register = (Button) findViewById(R.id.btn_register);
+        title = (TextView) findViewById(R.id.login_title);
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 doLogin();
             }
         });
-
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(LoginActivity.this, RegisterActivity.class);
-                startActivity(i);
+                ActivityOptionsCompat options = ActivityOptionsCompat.
+                        makeSceneTransitionAnimation(LoginActivity.this, title, "logo");
+                ActivityCompat.startActivity(LoginActivity.this, i, options.toBundle());
             }
         });
     }
 
     private void doLogin() {
-        if(UserDbHelper.checkLogin(this, username.getText().toString(), password.getText().toString())!=-1){
+        if (UserDbHelper.checkLogin(this, username.getText().toString(), password.getText().toString()) != -1) {
             SessionManager.getInstance().setId(UserDbHelper.getId(LoginActivity.this, username.getText().toString()));
             SessionManager.getInstance().setLoggedIn(true);
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
             this.finish();
-        }else{
-            Toast.makeText(this, R.string.login_error, Toast.LENGTH_SHORT ).show();
+        } else {
+            Toast.makeText(this, R.string.login_error, Toast.LENGTH_SHORT).show();
         }
     }
 }

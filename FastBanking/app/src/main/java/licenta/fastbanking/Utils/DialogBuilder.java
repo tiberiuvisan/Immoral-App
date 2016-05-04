@@ -54,7 +54,7 @@ public class DialogBuilder {
 
     public static void changeTitleColor(Context context, TextView title, Bank bank){
         if(bank.calculateWaitTime()<5){
-            title.setBackgroundColor(context.getResources().getColor(R.color.fast_green_light));
+            title.setBackgroundColor(context.getResources().getColor(R.color.fast_yellow_light));
         }else if(bank.calculateWaitTime()<15){
             title.setBackgroundColor(context.getResources().getColor(R.color.fast_orange));
         }else{
