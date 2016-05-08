@@ -8,4 +8,7 @@
     <color name="fast_yellow_light">#e3cb1b</color>
     <color name="fast_orange">#E8793A</color>
     <color name="fast_red">#C61F30</color>
+    <color name="fast_green">#289950</color>
+    <color name="fast_green_alpha">#99289950</color>
+    <color name="fast_green_light">#35CC6A</color>
 </resources>

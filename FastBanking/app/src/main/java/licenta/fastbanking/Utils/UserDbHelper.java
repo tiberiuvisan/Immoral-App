@@ -126,6 +126,8 @@ public class UserDbHelper extends SQLiteOpenHelper {
         return isAdmin;
     }
 
+
+
     public static int getId(Context context, String user){
         getInstance(context);
         int id=-1;

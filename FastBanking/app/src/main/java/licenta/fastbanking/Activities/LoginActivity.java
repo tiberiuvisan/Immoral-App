@@ -74,10 +74,12 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void doLogin() {
-        if (UserDbHelper.checkLogin(this, username.getText().toString(), password.getText().toString()) != -1) {
+        if (UserDbHelper.checkLogin(this, username.getText().toString().trim(), password.getText().toString()) != -1) {
             SessionManager.getInstance().setId(UserDbHelper.getId(LoginActivity.this, username.getText().toString()));
             SessionManager.getInstance().setLoggedIn(true);
-            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+            Intent i = new Intent(LoginActivity.this, MainActivity.class);
+            i.putExtra("username",username.getText().toString().trim());
+            startActivity(i);
             this.finish();
         } else {
             Toast.makeText(this, R.string.login_error, Toast.LENGTH_SHORT).show();

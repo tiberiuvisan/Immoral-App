@@ -24,5 +24,7 @@
     <string name="btn_add">Adaugare</string>
     <string name="btn_cancel">Anulare</string>
     <string name="btn_ok">OK</string>
+    <string name="no">NO</string>
+    <string name="yes">YES</string>
 
 </resources>
