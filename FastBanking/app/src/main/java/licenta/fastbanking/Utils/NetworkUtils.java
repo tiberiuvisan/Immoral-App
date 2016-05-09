@@ -62,7 +62,6 @@ public class NetworkUtils {
                         leg = gson.fromJson(formattedLeg, Leg.class);
 
                         directions.routes.get(0).formattedLegs.add(leg);
-                        Log.d(TAG, "Formatted leg: " + formattedLeg);
                     }
 
 

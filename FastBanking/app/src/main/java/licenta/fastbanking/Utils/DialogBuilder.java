@@ -13,6 +13,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import licenta.fastbanking.Objects.Bank;
+import licenta.fastbanking.Objects.Directions;
+import licenta.fastbanking.Objects.Leg;
 import licenta.fastbanking.R;
 
 /**
@@ -23,13 +25,13 @@ public class DialogBuilder {
     private static ProgressDialog progressDialog;
 
     public static void createProgressDialog(Context context) {
-        progressDialog= new ProgressDialog(context);
+        progressDialog = new ProgressDialog(context);
         progressDialog.setMessage("Se obtin datele...");
         progressDialog.show();
     }
 
     public static void dismissProgressDialog() {
-        if (progressDialog.isShowing() && progressDialog != null){
+        if (progressDialog.isShowing() && progressDialog != null) {
             progressDialog.dismiss();
         }
     }
@@ -45,7 +47,7 @@ public class DialogBuilder {
         ok.setEnabled(true);
     }
 
-    public static void DialogBankInfo(Context context, Bank bank) {
+    public static void DialogBankInfo(Context context, Bank bank, Directions directions) {
         AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(context, R.style.Theme_AppCompat_Light_Dialog));
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.dialog_bank_info, null);
@@ -53,12 +55,21 @@ public class DialogBuilder {
         TextView name = (TextView) view.findViewById(R.id.bank_name);
         TextView counters = (TextView) view.findViewById(R.id.bank_counters_number);
         TextView total_people = (TextView) view.findViewById(R.id.bank_total_people);
-        TextView time = (TextView) view.findViewById(R.id.bank_wait_time);
+        TextView waitTime = (TextView) view.findViewById(R.id.bank_wait_time);
+        TextView travelTime = (TextView) view.findViewById(R.id.bank_total_travel_time);
+        TextView totalTime = (TextView) view.findViewById(R.id.bank_total_time);
         changeTitleColor(context, name, bank);
         name.setText(bank.name);
         counters.setText(String.valueOf(bank.countersNumber));
         total_people.setText(String.valueOf(bank.totalPeople));
-        time.setText(String.valueOf(bank.waitTime));
+        waitTime.setText(String.valueOf(bank.waitTime));
+        int travelTimeInt = 0;
+        for (Leg leg : directions.routes.get(0).formattedLegs) {
+            //am facut conversie din secunde in minute
+            travelTimeInt += (leg.duration.value / 60);
+        }
+        travelTime.setText(String.valueOf(travelTimeInt));
+        totalTime.setText(String.valueOf(travelTimeInt + bank.calculateWaitTime()));
 
         builder.setView(view)
                 .setCancelable(false)
@@ -72,7 +83,7 @@ public class DialogBuilder {
 
     public static void changeTitleColor(Context context, TextView title, Bank bank) {
         if (bank.calculateWaitTime() < 5) {
-            title.setBackgroundColor(context.getResources().getColor(R.color.fast_yellow_light));
+            title.setBackgroundColor(context.getResources().getColor(R.color.fast_green_light));
         } else if (bank.calculateWaitTime() < 15) {
             title.setBackgroundColor(context.getResources().getColor(R.color.fast_orange));
         } else {
@@ -89,6 +100,7 @@ public class DialogBuilder {
 
 
     private static boolean requestGPS = false;
+
     public static void showDialogEnableLocation(final Context context) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
 

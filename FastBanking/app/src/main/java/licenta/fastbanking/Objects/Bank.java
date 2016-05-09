@@ -21,7 +21,7 @@ public class Bank implements Serializable, ClusterItem {
     public double lng;
 
     public int calculateWaitTime(){
-        int totalWait=0;
+        int totalWait;
 
         totalWait = (this.waitTime*this.totalPeople)/this.countersNumber;
 

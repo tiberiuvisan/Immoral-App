@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.location.Location;
@@ -27,7 +26,6 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 
-import licenta.fastbanking.Activities.VideoActivity;
 import licenta.fastbanking.Managers.SessionManager;
 import licenta.fastbanking.Objects.Bank;
 import licenta.fastbanking.Objects.CurrentUser;
@@ -36,7 +34,6 @@ import licenta.fastbanking.Utils.BankDbHelper;
 import licenta.fastbanking.Utils.Constants;
 import licenta.fastbanking.Utils.DialogBuilder;
 import licenta.fastbanking.Utils.UserDbHelper;
-import licenta.fastbanking.Utils.YoutubeExtractor;
 
 public class MainActivity extends AppCompatActivity {
 

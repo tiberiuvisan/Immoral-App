@@ -27,6 +27,7 @@ import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.algo.GridBasedAlgorithm;
 
 import licenta.fastbanking.Objects.Bank;
+import licenta.fastbanking.Objects.Directions;
 import licenta.fastbanking.Utils.Constants;
 import licenta.fastbanking.Utils.DialogBuilder;
 import licenta.fastbanking.Utils.NetworkUtils;
@@ -81,6 +82,12 @@ public class MapUtils {
             }
         });
         map.setOnInfoWindowClickListener(mClusterManager);
+        /*
+        * in momentul in care se cer mai multe detalii legate de un punct
+        * se vor cere si detaliile legate de rutarea catre punctul respectiv
+        *
+        *
+        * */
         mClusterManager.setOnClusterItemInfoWindowClickListener(new ClusterManager.OnClusterItemInfoWindowClickListener<Bank>() {
             @Override
             public void onClusterItemInfoWindowClick(final Bank bank) {
@@ -92,8 +99,9 @@ public class MapUtils {
                             @Override
                             public void onComplete(boolean status, Object data) {
                                 if (status) {
+                                    Directions resultDirections = (Directions) data;
                                     DialogBuilder.dismissProgressDialog();
-                                    DialogBuilder.DialogBankInfo(ctx, bank);
+                                    DialogBuilder.DialogBankInfo(ctx, bank, resultDirections);
                                 }
 
                             }

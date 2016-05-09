@@ -21,6 +21,9 @@
     <string name="counters_number">Numar ghisee</string>
     <string name="wait_time">Timp mediu de asteptare (min)</string>
     <string name="total_people">Numar total de persoane</string>
+    <string name="total_travel_time">Timp pana la destinatie</string>
+    <string name="total_wait_time">Timp de asteptare la coada</string>
+    <string name="total_time">Timp total</string>
     <string name="btn_add">Adaugare</string>
     <string name="btn_cancel">Anulare</string>
     <string name="btn_ok">OK</string>
