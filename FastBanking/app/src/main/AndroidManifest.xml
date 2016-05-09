@@ -35,20 +35,31 @@
             android:name=".Activities.SplashActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
+            <!--<intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>-->
+        </activity>
+        <activity
+            android:name=".Map.MainActivity"
+            android:label="@string/app_name"
+            android:theme="@style/MainActivityTheme"
+
+            android:screenOrientation="portrait">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
         <activity
-            android:name=".Map.MainActivity"
+            android:name=".Activities.VideoActivity"
             android:label="@string/app_name"
-            android:theme="@style/MainActivityTheme"
             android:screenOrientation="portrait">
         </activity>
-
-
         <activity
             android:name=".Activities.LoginActivity"
             android:label="@string/app_name"

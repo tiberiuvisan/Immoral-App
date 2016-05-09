@@ -1,10 +1,18 @@
 package licenta.fastbanking.Map;
 
+import android.Manifest;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.location.Location;
+import android.location.LocationManager;
+import android.net.Network;
+import android.support.v4.app.ActivityCompat;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.View;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -12,6 +20,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
@@ -20,6 +29,8 @@ import com.google.maps.android.clustering.algo.GridBasedAlgorithm;
 import licenta.fastbanking.Objects.Bank;
 import licenta.fastbanking.Utils.Constants;
 import licenta.fastbanking.Utils.DialogBuilder;
+import licenta.fastbanking.Utils.NetworkUtils;
+import licenta.fastbanking.Utils.OnCompleteListener;
 
 public class MapUtils {
 
@@ -55,6 +66,7 @@ public class MapUtils {
     //functie de setare harta si setarea cluster manager
     public void setUpMap() {
         map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
         map.setMyLocationEnabled(true);
         setupClusterManager();
         mClusterManager.setRenderer(new PinRenderer(ctx, map, mClusterManager));
@@ -71,8 +83,21 @@ public class MapUtils {
         map.setOnInfoWindowClickListener(mClusterManager);
         mClusterManager.setOnClusterItemInfoWindowClickListener(new ClusterManager.OnClusterItemInfoWindowClickListener<Bank>() {
             @Override
-            public void onClusterItemInfoWindowClick(Bank bank) {
-                DialogBuilder.DialogBankInfo(ctx, bank);
+            public void onClusterItemInfoWindowClick(final Bank bank) {
+                DialogBuilder.createProgressDialog(ctx);
+                NetworkUtils.getNetworkUtils(ctx).getDirections(getLastLocation(),
+                        bank.getPosition(),
+                        "walking",
+                        new OnCompleteListener() {
+                            @Override
+                            public void onComplete(boolean status, Object data) {
+                                if (status) {
+                                    DialogBuilder.dismissProgressDialog();
+                                    DialogBuilder.DialogBankInfo(ctx, bank);
+                                }
+
+                            }
+                        });
             }
         });
 
@@ -102,6 +127,7 @@ public class MapUtils {
                 return true;
             }
         });
+
 
     }
 
@@ -207,5 +233,18 @@ public class MapUtils {
         DisplayMetrics metrics = resources.getDisplayMetrics();
         float px = dp * (metrics.densityDpi / 160f);
         return px;
+    }
+
+
+    public static boolean checkLocationEnabled(Context context) {
+        final LocationManager manager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        return manager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+                || manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+    }
+
+    public LatLng getLastLocation() {
+        float lastLat = sp.getFloat(Constants.LOCATION_LAST_LAT, 0);
+        float lastLng = sp.getFloat(Constants.LOCATION_LAST_LNG, 0);
+        return new LatLng(lastLat, lastLng);
     }
 }

@@ -4,12 +4,12 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -25,10 +25,9 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 
+import licenta.fastbanking.Activities.VideoActivity;
 import licenta.fastbanking.Managers.SessionManager;
 import licenta.fastbanking.Objects.Bank;
 import licenta.fastbanking.Objects.CurrentUser;
@@ -37,6 +36,7 @@ import licenta.fastbanking.Utils.BankDbHelper;
 import licenta.fastbanking.Utils.Constants;
 import licenta.fastbanking.Utils.DialogBuilder;
 import licenta.fastbanking.Utils.UserDbHelper;
+import licenta.fastbanking.Utils.YoutubeExtractor;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -71,14 +71,32 @@ public class MainActivity extends AppCompatActivity {
         getCurrentUser();
         initialiseUI();
         setupMapIfNeeded();
+
+
         banks = BankDbHelper.getBanksFromDatabase(this);
+
+        //check for location service
+        Log.d(TAG, "initLocation - location null");
+        if (!MapUtils.checkLocationEnabled(this))
+            DialogBuilder.showDialogEnableLocation(this);
 
     }
 
-    private void getCurrentUser() {
+  /*  private void getCurrentUser() {
         currentUser = new CurrentUser();
+
         currentUser.username = getIntent().getStringExtra("username");
         currentUser.admin = UserDbHelper.checkAdmin(this, UserDbHelper.getId(this, currentUser.username));
+
+        Log.d(TAG, "Current user: " + currentUser.toString());
+
+    }*/
+
+    private void getCurrentUser() {
+        currentUser = new CurrentUser();
+
+        currentUser.username = "TEST ";
+        currentUser.admin = true;
 
         Log.d(TAG, "Current user: " + currentUser.toString());
 
@@ -297,18 +315,18 @@ public class MainActivity extends AppCompatActivity {
 
 
     @Override
-    protected void onPostCreate(Bundle savedInstanceState)
-    {
+    protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         drawerToggle.syncState();
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig)
-    {
+    public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         drawerToggle.onConfigurationChanged(newConfig);
     }
+
+
 
 
 }

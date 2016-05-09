@@ -12,4 +12,7 @@ public class Constants {
 
     public static final String LOCATION_LAST_LAT = "locationSharedPrefsLat";
     public static final String LOCATION_LAST_LNG = "locationSharedPrefsLng";
+
+
+    public static String DIRECTION_BASE_URL = "https://maps.googleapis.com/maps/api/directions/json?";
 }
