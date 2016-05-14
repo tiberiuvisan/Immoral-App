@@ -1,18 +1,12 @@
 package licenta.fastbanking.Map;
 
-import android.Manifest;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.location.Location;
 import android.location.LocationManager;
-import android.net.Network;
-import android.support.v4.app.ActivityCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.View;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -20,14 +14,16 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.PolyUtil;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.algo.GridBasedAlgorithm;
 
 import licenta.fastbanking.Objects.Bank;
 import licenta.fastbanking.Objects.Directions;
+import licenta.fastbanking.R;
 import licenta.fastbanking.Utils.Constants;
 import licenta.fastbanking.Utils.DialogBuilder;
 import licenta.fastbanking.Utils.NetworkUtils;
@@ -59,7 +55,7 @@ public class MapUtils {
     }
 
     public void setCenter(LatLng point) {
-        CameraPosition cameraPosition = new CameraPosition(point, 5.5f, 0, 0);
+        CameraPosition cameraPosition = new CameraPosition(point, 10f, 0, 0);
         map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
@@ -91,21 +87,7 @@ public class MapUtils {
         mClusterManager.setOnClusterItemInfoWindowClickListener(new ClusterManager.OnClusterItemInfoWindowClickListener<Bank>() {
             @Override
             public void onClusterItemInfoWindowClick(final Bank bank) {
-                DialogBuilder.createProgressDialog(ctx);
-                NetworkUtils.getNetworkUtils(ctx).getDirections(getLastLocation(),
-                        bank.getPosition(),
-                        "walking",
-                        new OnCompleteListener() {
-                            @Override
-                            public void onComplete(boolean status, Object data) {
-                                if (status) {
-                                    Directions resultDirections = (Directions) data;
-                                    DialogBuilder.dismissProgressDialog();
-                                    DialogBuilder.DialogBankInfo(ctx, bank, resultDirections);
-                                }
-
-                            }
-                        });
+                createDialogForNavigation(bank);
             }
         });
 
@@ -204,16 +186,16 @@ public class MapUtils {
         mClusterManager.addItem(p);
     }
 
-   /* public void addPolyline(CustomPolyline customPolyline) {
+    public void addPolyline(String customPolyline) {
         if (trackPolyline != null) trackPolyline.remove();
         trackPolyline = map.addPolyline(new PolylineOptions()
-                .addAll(PolyUtil.decode(customPolyline.getEncodedPolyline()))
-                .width(convertDpToPixel(5, ctx)).color(ctx.getResources().getColor(R.color.action_bar_color)));
+                .addAll(PolyUtil.decode(customPolyline))
+                .width(convertDpToPixel(5, ctx)).color(ctx.getResources().getColor(R.color.colorPrimary)));
 
 
-        Log.d(TAG, "decoded poly: " + PolyUtil.decode(customPolyline.getEncodedPolyline()));
-        map.animateCamera(CameraUpdateFactory.newLatLngBounds(customPolyline.getLatLngBounds(), (int) convertDpToPixel(30, ctx)));
-    }*/
+        Log.d(TAG, "decoded poly: " + PolyUtil.decode(customPolyline));
+        //map.animateCamera(CameraUpdateFactory.newLatLngBounds(customPolyline.getLatLngBounds(), (int) convertDpToPixel(30, ctx)));
+    }
 
     public void removeFromCluster(Bank bank) {
         mClusterManager.removeItem(bank);
@@ -254,5 +236,36 @@ public class MapUtils {
         float lastLat = sp.getFloat(Constants.LOCATION_LAST_LAT, 0);
         float lastLng = sp.getFloat(Constants.LOCATION_LAST_LNG, 0);
         return new LatLng(lastLat, lastLng);
+    }
+
+    public void navigateTo(String polylinePoints, LatLngBounds latLngBounds) {
+        addPolyline(polylinePoints);
+        map.animateCamera(CameraUpdateFactory
+                .newLatLngBounds(latLngBounds, (int) convertDpToPixel(30, ctx)));
+    }
+
+    public void createDialogForNavigation(final Bank bank) {
+        DialogBuilder.createProgressDialog(ctx);
+        NetworkUtils.getNetworkUtils(ctx).getDirections(getLastLocation(),
+                bank.getPosition(),
+                "walking",
+                new OnCompleteListener() {
+                    @Override
+                    public void onComplete(boolean status, Object data) {
+                        if (status) {
+                            final Directions resultDirections = (Directions) data;
+                            DialogBuilder.dismissProgressDialog();
+                            DialogBuilder.DialogBankInfo(ctx, bank, resultDirections, new OnCompleteListener() {
+                                @Override
+                                public void onComplete(boolean status, Object data) {
+                                    addPolyline(resultDirections.routes.get(0).overview_polyline.points);
+                                    map.animateCamera(CameraUpdateFactory
+                                            .newLatLngBounds(resultDirections.routes.get(0).bounds.getLatLngBounds(), (int) convertDpToPixel(30, ctx)));
+                                }
+                            });
+                        }
+
+                    }
+                });
     }
 }

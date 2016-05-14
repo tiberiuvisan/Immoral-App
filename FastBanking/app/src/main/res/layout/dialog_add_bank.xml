@@ -25,7 +25,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/bank_name"
-            android:padding="10dp"/>
+            android:padding="10dp"
+            android:textColor="@android:color/black"/>
     </android.support.design.widget.TextInputLayout>
 
 
@@ -41,7 +42,8 @@
             android:layout_height="wrap_content"
             android:hint="@string/counters_number"
             android:inputType="number"
-            android:padding="10dp"/>
+            android:padding="10dp"
+            android:textColor="@android:color/black"/>
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
@@ -56,7 +58,8 @@
             android:layout_height="wrap_content"
             android:hint="@string/wait_time"
             android:inputType="number"
-            android:padding="10dp"/>
+            android:padding="10dp"
+            android:textColor="@android:color/black"/>
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
@@ -71,7 +74,8 @@
             android:layout_height="wrap_content"
             android:hint="@string/total_people"
             android:inputType="number"
-            android:padding="10dp"/>
+            android:padding="10dp"
+            android:textColor="@android:color/black"/>
     </android.support.design.widget.TextInputLayout>
 
 

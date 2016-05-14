@@ -89,7 +89,7 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_marginTop="10dp"
-        android:text="Cauta traseul: "
+        android:text="Mod de deplasare: "
         android:textSize="18sp"
         android:textStyle="bold"/>
 
@@ -101,25 +101,34 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_marginTop="10dp"
-
-        android:orientation="horizontal">
-
-
-        <RadioButton
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="cel mai scurt"
-            android:layout_weight="1"/>
+        android:orientation="vertical">
 
 
         <RadioButton
-            android:layout_width="0dp"
+            android:checked="true"
+            android:id="@+id/radio_button_w"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="cel mai rapid"
-            android:layout_weight="1"/>
+            android:text="Pe jos"
+            />
+
+
+        <RadioButton
+            android:id="@+id/radio_button_d"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cu masina"
+            />
+
+        <RadioButton
+            android:id="@+id/radio_button_t"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cu transport in comun"
+            />
+
 
     </RadioGroup>
-
 
     <View
         android:layout_width="match_parent"
@@ -134,12 +143,11 @@
         android:layout_height="wrap_content"
         android:layout_marginRight="10dp"
         android:layout_marginTop="10dp"
-        android:padding="10dp"
         android:gravity="center|left"
+        android:padding="10dp"
         android:text="Logout"
         android:textSize="20sp"
         />
-
 
 
 </LinearLayout>

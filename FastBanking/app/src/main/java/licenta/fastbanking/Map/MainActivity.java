@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -66,11 +67,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         sp = getSharedPreferences(Constants.SHARED_PREFS, Context.MODE_PRIVATE);
         getCurrentUser();
+        banks = BankDbHelper.getBanksFromDatabase(this);
         initialiseUI();
         setupMapIfNeeded();
 
-
-        banks = BankDbHelper.getBanksFromDatabase(this);
 
         //check for location service
         Log.d(TAG, "initLocation - location null");
@@ -78,16 +78,6 @@ public class MainActivity extends AppCompatActivity {
             DialogBuilder.showDialogEnableLocation(this);
 
     }
-
-  /*  private void getCurrentUser() {
-        currentUser = new CurrentUser();
-
-        currentUser.username = getIntent().getStringExtra("username");
-        currentUser.admin = UserDbHelper.checkAdmin(this, UserDbHelper.getId(this, currentUser.username));
-
-        Log.d(TAG, "Current user: " + currentUser.toString());
-
-    }*/
 
     private void getCurrentUser() {
         currentUser = new CurrentUser();
@@ -157,9 +147,18 @@ public class MainActivity extends AppCompatActivity {
         /*Elementele din drawer*/
         headerUsername = (TextView) findViewById(R.id.header_username);
         headerIsAdmin = (TextView) findViewById(R.id.header_admin);
+
         setHeaderValues();
 
 
+    }
+
+    public void onClosestPin(View v) {
+        if (banks != null) {
+            if (banks.size() != 0) {
+                mapUtils.createDialogForNavigation(banks.get(getClosestBankPosition(banks)));
+            }
+        }
     }
 
     private void setHeaderValues() {
@@ -217,12 +216,16 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onMapLoaded() {
                 LatLng centru = new LatLng(45.40, 25.10);
+                if (mapUtils.getLastLocation() != new LatLng(0, 0) || mapUtils != null) {
+                    centru = mapUtils.getLastLocation();
+                }
                 mapUtils.setCenter(centru);
                 getLocation();
                 for (Bank bank : banks) {
                     mapUtils.addToCluster(bank);
                     mapUtils.recluster();
                 }
+                calculateDistanceForAllBanks(banks);
                 mapUtils.recluster();
             }
         });
@@ -324,6 +327,35 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    public void calculateDistanceForAllBanks(ArrayList<Bank> banks) {
 
+        /*calculeaza locatia a 2 puncte in metri*/
+        Location myLocation = new Location("myLoc");
+        myLocation.setLatitude(mapUtils.getLastLocation().latitude);
+        myLocation.setLongitude(mapUtils.getLastLocation().longitude);
+        for (Bank bank : banks) {
+            Location bankLocation = new Location("bank");
+            bankLocation.setLatitude(bank.lat);
+            bankLocation.setLongitude(bank.lng);
+            bank.distance = myLocation.distanceTo(bankLocation);
+            Log.d(TAG, "bank location: " + String.valueOf(bank.distance));
 
+        }
+
+    }
+
+    public int getClosestBankPosition(ArrayList<Bank> banks) {
+        int closestBankPosition = 0;
+        if (banks.size() == 0) {
+            return -1;
+        }
+        Bank closestBank = banks.get(0);
+        for (int i = 0; i < banks.size(); i++) {
+            if (banks.get(i).distance < closestBank.distance) {
+                closestBankPosition = i;
+            }
+
+        }
+        return closestBankPosition;
+    }
 }

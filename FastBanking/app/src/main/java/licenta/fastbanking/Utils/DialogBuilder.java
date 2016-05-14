@@ -47,7 +47,7 @@ public class DialogBuilder {
         ok.setEnabled(true);
     }
 
-    public static void DialogBankInfo(Context context, Bank bank, Directions directions) {
+    public static void DialogBankInfo(Context context, Bank bank, final Directions directions, final OnCompleteListener ocl) {
         AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(context, R.style.Theme_AppCompat_Light_Dialog));
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.dialog_bank_info, null);
@@ -73,10 +73,11 @@ public class DialogBuilder {
 
         builder.setView(view)
                 .setCancelable(false)
-                .setPositiveButton(R.string.btn_ok, new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.btn_navigate, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
+                        ocl.onComplete(true, directions);
                     }
                 }).create().show();
     }
@@ -99,7 +100,6 @@ public class DialogBuilder {
     * */
 
 
-    private static boolean requestGPS = false;
 
     public static void showDialogEnableLocation(final Context context) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);

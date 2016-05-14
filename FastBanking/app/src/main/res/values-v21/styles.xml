@@ -18,6 +18,13 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColorPrimary">@android:color/white</item>
         <item name="android:textColorSecondary">@android:color/white</item>
+        <item name="android:editTextStyle">@style/EditTextTheme</item>
+    </style>
+
+    <style name="EditTextTheme" parent="Base.Widget.AppCompat.EditText">
+        <item name="android:textColor">@android:color/black</item>
+
+
     </style>
 
     <!-- ToolBar -->

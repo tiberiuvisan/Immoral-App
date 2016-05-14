@@ -11,7 +11,6 @@ import java.io.Serializable;
 public class Bank implements Serializable, ClusterItem {
 
 
-
     public int id;
     public String name;
     public int countersNumber;
@@ -20,10 +19,12 @@ public class Bank implements Serializable, ClusterItem {
     public double lat;
     public double lng;
 
-    public int calculateWaitTime(){
+    public double distance;
+
+    public int calculateWaitTime() {
         int totalWait;
 
-        totalWait = (this.waitTime*this.totalPeople)/this.countersNumber;
+        totalWait = (this.waitTime * this.totalPeople) / this.countersNumber;
 
         return totalWait;
     }
@@ -32,12 +33,12 @@ public class Bank implements Serializable, ClusterItem {
     @Override
     public String toString() {
         return id + ", "
-                +name + ", "
-                +countersNumber +", "
-                +waitTime +", "
-                +totalPeople+", "
-                +lat +", "
-                +lng;
+                + name + ", "
+                + countersNumber + ", "
+                + waitTime + ", "
+                + totalPeople + ", "
+                + lat + ", "
+                + lng;
     }
 
     @Override
