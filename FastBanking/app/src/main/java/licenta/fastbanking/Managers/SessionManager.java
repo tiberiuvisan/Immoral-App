@@ -53,4 +53,10 @@ public class SessionManager {
         authSharedPrefsEditor.apply();
     }
 
+    public void logout() {
+        authSharedPrefsEditor = authSharedPrefs.edit();
+        authSharedPrefsEditor.clear().apply();
+        setLoggedIn(false);
+    }
+
 }

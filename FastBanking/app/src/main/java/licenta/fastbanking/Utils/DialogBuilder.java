@@ -79,12 +79,18 @@ public class DialogBuilder {
                         dialog.dismiss();
                         ocl.onComplete(true, directions);
                     }
+                })
+                .setNeutralButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
                 }).create().show();
     }
 
     public static void changeTitleColor(Context context, TextView title, Bank bank) {
         if (bank.calculateWaitTime() < 5) {
-            title.setBackgroundColor(context.getResources().getColor(R.color.fast_green_light));
+            title.setBackgroundColor(context.getResources().getColor(R.color.fast_green));
         } else if (bank.calculateWaitTime() < 15) {
             title.setBackgroundColor(context.getResources().getColor(R.color.fast_orange));
         } else {

@@ -12,6 +12,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.widget.TextView;
 
+import licenta.fastbanking.Managers.SessionManager;
 import licenta.fastbanking.Map.MainActivity;
 import licenta.fastbanking.R;
 
@@ -47,12 +48,12 @@ public class SplashActivity extends Activity {
 
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                  /*  if(SessionManager.getInstance().isLoggedIn()){
+                    if(SessionManager.getInstance().isLoggedIn()){
                         startMainActivity();
-                    }else {*/
-                    startLoginActivity();
+                    }else {
+                        startLoginActivity();
 
-                    // }
+                    }
                 }
 
                 @Override

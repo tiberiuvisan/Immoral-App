@@ -141,4 +141,18 @@ public class UserDbHelper extends SQLiteOpenHelper {
         cursor.close();
         return id;
     }
+
+    public static String getUser(Context context, int id){
+        getInstance(context);
+        String user="";
+        Cursor cursor = db.query(TABLE_USERS,TABLE_ALL_COLS_USERS,TABLE_COL_ID+"='"+id+"'",null,null,null,null);
+        if(cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                user = cursor.getString(1);
+                cursor.moveToNext();
+            }
+        }
+        cursor.close();
+        return user;
+    }
 }

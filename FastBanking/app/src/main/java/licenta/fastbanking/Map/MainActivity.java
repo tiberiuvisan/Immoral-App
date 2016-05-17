@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.location.Location;
@@ -32,6 +33,7 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.ArrayList;
 import java.util.Random;
 
+import licenta.fastbanking.Activities.LoginActivity;
 import licenta.fastbanking.Managers.SessionManager;
 import licenta.fastbanking.Objects.Bank;
 import licenta.fastbanking.Objects.CurrentUser;
@@ -82,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
     /*DRAWER VIEWS*/
     private TextView headerUsername;
     private TextView headerIsAdmin;
+    private TextView logout;
     private RadioButton walkingMode;
     private RadioButton drivingMode;
     private RadioButton transitMode;
@@ -158,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
     private void getCurrentUser() {
         currentUser = new CurrentUser();
 
-        currentUser.username = getIntent().getStringExtra("username");
+        currentUser.username = UserDbHelper.getUser(this, SessionManager.getInstance().getId());
         currentUser.admin = UserDbHelper.checkAdmin(this, UserDbHelper.getId(this,currentUser.username));
 
         Log.d(TAG, "Current user: " + currentUser.toString());
@@ -223,8 +226,20 @@ public class MainActivity extends AppCompatActivity {
         /*Elementele din drawer*/
         headerUsername = (TextView) findViewById(R.id.header_username);
         headerIsAdmin = (TextView) findViewById(R.id.header_admin);
+        logout = (TextView)findViewById(R.id.logout);
 
         setHeaderValues();
+
+        logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                SessionManager.getInstance().logout();
+                finish();
+            }
+        });
 
         /*elementele din bara de jos*/
 
@@ -402,7 +417,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void addMarker(final LatLng latLng) {
-
 
         AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(MainActivity.this, R.style.Theme_AppCompat_Light_Dialog));
         LayoutInflater inflater = (LayoutInflater) MainActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
