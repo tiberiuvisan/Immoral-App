@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -19,6 +20,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -26,25 +30,37 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import licenta.fastbanking.Managers.SessionManager;
 import licenta.fastbanking.Objects.Bank;
 import licenta.fastbanking.Objects.CurrentUser;
+import licenta.fastbanking.Objects.Directions;
 import licenta.fastbanking.R;
 import licenta.fastbanking.Utils.BankDbHelper;
 import licenta.fastbanking.Utils.Constants;
 import licenta.fastbanking.Utils.DialogBuilder;
+import licenta.fastbanking.Utils.NetworkUtils;
+import licenta.fastbanking.Utils.OnCompleteListener;
 import licenta.fastbanking.Utils.UserDbHelper;
 
 public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = "MainActivity";
+    private static final int COUNTDOWN_TIMER_SECONDS = 50;
+    private static final int REMOVE_COUNTDOWN_TIMER_SECCONDS = 60 * 7;
 
     private GoogleMap mMap;
     private MapUtils mapUtils;
     private LatLng latLng;
     private ArrayList<Bank> banks;
     SharedPreferences sp;
+
+
+    private String transportMode;
+
+    /*DIRECTIONS INFO*/
+    public Directions currentDirections;
 
 
     /*CURRENT USER*/
@@ -55,10 +71,66 @@ public class MainActivity extends AppCompatActivity {
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
+    private Button btnClosestPin;
+    private LinearLayout bottomBar;
+    private Button btnStopNavigation;
+    private TextView timeRemaining;
+    private TextView distanceRemaining;
+    private TextView updateInfoIn;
+
 
     /*DRAWER VIEWS*/
     private TextView headerUsername;
     private TextView headerIsAdmin;
+    private RadioButton walkingMode;
+    private RadioButton drivingMode;
+    private RadioButton transitMode;
+    private RadioGroup transitRadioGroup;
+
+    public int navigateBankId;
+    private boolean isNavigating = false;
+
+    /*Timer pentru adaugarea de oameni la ghiseu*/
+
+    private CountDownTimer addPeopleCDT = new CountDownTimer(COUNTDOWN_TIMER_SECONDS * 1000, 1000) {
+        @Override
+        public void onTick(long millisUntilFinished) {
+            //nu face nimic
+        }
+
+        @Override
+        public void onFinish() {
+            int max = banks.size() - 1;
+            Random peopleRandom = new Random();
+            int randomID = peopleRandom.nextInt(max);
+            banks.get(randomID).totalPeople++;
+            Log.d("TIMER", "Added people to bank with id: " + randomID);
+
+            addPeopleCDT.start();
+
+        }
+    };
+
+    private CountDownTimer removePeopleCDT = new CountDownTimer(REMOVE_COUNTDOWN_TIMER_SECCONDS * 1000, 1000) {
+        @Override
+        public void onTick(long millisUntilFinished) {
+
+        }
+
+        @Override
+        public void onFinish() {
+
+            for (Bank bank : banks) {
+                bank.totalPeople = bank.totalPeople - bank.countersNumber;
+                if (bank.totalPeople < 0)
+                    bank.totalPeople = 0;
+
+                Log.d("TIMER", "Removed " + bank.countersNumber + " from bank with id: " + bank.id);
+                Log.d("TIMER", "People remaining: " + bank.totalPeople);
+            }
+            removePeopleCDT.start();
+        }
+    };
 
 
     @Override
@@ -68,22 +140,26 @@ public class MainActivity extends AppCompatActivity {
         sp = getSharedPreferences(Constants.SHARED_PREFS, Context.MODE_PRIVATE);
         getCurrentUser();
         banks = BankDbHelper.getBanksFromDatabase(this);
+        for (Bank bank : banks) {
+            bank.id--;
+        }
         initialiseUI();
         setupMapIfNeeded();
-
 
         //check for location service
         Log.d(TAG, "initLocation - location null");
         if (!MapUtils.checkLocationEnabled(this))
             DialogBuilder.showDialogEnableLocation(this);
 
+
     }
+
 
     private void getCurrentUser() {
         currentUser = new CurrentUser();
 
-        currentUser.username = "TEST ";
-        currentUser.admin = true;
+        currentUser.username = getIntent().getStringExtra("username");
+        currentUser.admin = UserDbHelper.checkAdmin(this, UserDbHelper.getId(this,currentUser.username));
 
         Log.d(TAG, "Current user: " + currentUser.toString());
 
@@ -150,16 +226,82 @@ public class MainActivity extends AppCompatActivity {
 
         setHeaderValues();
 
+        /*elementele din bara de jos*/
 
-    }
+        btnClosestPin = (Button) findViewById(R.id.btn_closest_pin);
 
-    public void onClosestPin(View v) {
-        if (banks != null) {
-            if (banks.size() != 0) {
-                mapUtils.createDialogForNavigation(banks.get(getClosestBankPosition(banks)));
+        bottomBar = (LinearLayout) findViewById(R.id.nav_bar);
+        btnStopNavigation = (Button) findViewById(R.id.btn_stop_navigation);
+        timeRemaining = (TextView) findViewById(R.id.tv_time_remaining);
+        distanceRemaining = (TextView) findViewById(R.id.tv_distance_remaining);
+        updateInfoIn = (TextView) findViewById(R.id.tv_update_info);
+
+        btnClosestPin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (banks != null) {
+                    if (banks.size() != 0) {
+                        mapUtils.createDialogForNavigation(banks.get(getClosestBankPosition(banks)));
+
+                    }
+                }
             }
-        }
+        });
+
+        btnStopNavigation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                disableNavViews();
+                loadMapItems();
+                countDownTimer.cancel();
+
+            }
+        });
+
+
+        /*radio buttons din drawer*/
+        walkingMode = (RadioButton) findViewById(R.id.radio_button_w);
+        drivingMode = (RadioButton) findViewById(R.id.radio_button_d);
+        transitMode = (RadioButton) findViewById(R.id.radio_button_t);
+        transitRadioGroup = (RadioGroup) findViewById(R.id.traseu_radio_group);
+
+        transitRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (isNavigating) {
+                    drawerLayout.closeDrawers();
+                    countDownTimer.cancel();
+                    getUpdatedInfo();
+                }
+            }
+        });
+
     }
+
+    public void enableNavViews() {
+        isNavigating = true;
+        btnClosestPin.setVisibility(View.GONE);
+        bottomBar.setVisibility(View.VISIBLE);
+        updateNavView(currentDirections.routes.get(0).formattedLegs.get(0).duration.text,
+                currentDirections.routes.get(0).formattedLegs.get(0).distance.text);
+    }
+
+    public void disableNavViews() {
+        if (mapUtils.trackPolyline != null) {
+            mapUtils.trackPolyline.remove();
+        }
+        isNavigating = false;
+        btnClosestPin.setVisibility(View.VISIBLE);
+        bottomBar.setVisibility(View.GONE);
+    }
+
+    private void updateNavView(String timeRemainingString, String distanceRemainingString) {
+        timeRemaining.setText(String.format(getResources().getString(R.string.aproximate_time_remaining), timeRemainingString));
+        distanceRemaining.setText(String.format(getResources().getString(R.string.remaining_distance), distanceRemainingString));
+
+
+    }
+
 
     private void setHeaderValues() {
         if (currentUser != null) {
@@ -183,6 +325,11 @@ public class MainActivity extends AppCompatActivity {
         //ultimele valori puse. Astfel, utilizatorul nu va fi trimis niciodata pe coordonate (0,0)
         if (GPSLocation.getLastInstance() != null)
             GPSLocation.getLastInstance().connect();
+        if (banks != null) {
+            addPeopleCDT.start();
+            removePeopleCDT.start();
+        }
+
         super.onResume();
     }
 
@@ -190,7 +337,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         if (GPSLocation.getLastInstance() != null)
             GPSLocation.getLastInstance().disconnect();
+        disableNavViews();
         super.onPause();
+
+        countDownTimer.cancel();
+        addPeopleCDT.cancel();
+        removePeopleCDT.cancel();
+
     }
 
     private void setupMapIfNeeded() {
@@ -215,18 +368,7 @@ public class MainActivity extends AppCompatActivity {
         mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
             @Override
             public void onMapLoaded() {
-                LatLng centru = new LatLng(45.40, 25.10);
-                if (mapUtils.getLastLocation() != new LatLng(0, 0) || mapUtils != null) {
-                    centru = mapUtils.getLastLocation();
-                }
-                mapUtils.setCenter(centru);
-                getLocation();
-                for (Bank bank : banks) {
-                    mapUtils.addToCluster(bank);
-                    mapUtils.recluster();
-                }
-                calculateDistanceForAllBanks(banks);
-                mapUtils.recluster();
+                loadMapItems();
             }
         });
 
@@ -358,4 +500,73 @@ public class MainActivity extends AppCompatActivity {
         }
         return closestBankPosition;
     }
+
+
+    private void loadMapItems() {
+        LatLng centru = new LatLng(45.40, 25.10);
+        if (mapUtils.getLastLocation() != new LatLng(0, 0) || mapUtils != null) {
+            centru = mapUtils.getLastLocation();
+        }
+        mapUtils.setCenter(centru);
+        getLocation();
+        for (Bank bank : banks) {
+            mapUtils.addToCluster(bank);
+            mapUtils.recluster();
+        }
+        calculateDistanceForAllBanks(banks);
+        mapUtils.recluster();
+
+        addPeopleCDT.start();
+
+    }
+
+    public String getTransportMode() {
+        if (walkingMode.isChecked()) {
+            transportMode = "walking";
+        } else if (transitMode.isChecked()) {
+            transportMode = "transit";
+        } else if (drivingMode.isChecked()) {
+            transportMode = "driving";
+        }
+
+
+        return transportMode;
+    }
+
+
+    public CountDownTimer countDownTimer = new CountDownTimer(COUNTDOWN_TIMER_SECONDS * 1000, 1000) {
+        @Override
+        public void onTick(long millisUntilFinished) {
+            updateInfoIn.setText(String.format(getResources().getString(R.string.update_info), String.valueOf(millisUntilFinished / 1000)));
+        }
+
+        @Override
+        public void onFinish() {
+            /*reupdate info */
+            DialogBuilder.createProgressDialog(MainActivity.this);
+            getUpdatedInfo();
+
+        }
+    };
+
+
+    private void getUpdatedInfo() {
+        NetworkUtils.getNetworkUtils(MainActivity.this).getDirections(mapUtils.getLastLocation(),
+                banks.get(navigateBankId).getPosition(),
+                getTransportMode(), new OnCompleteListener() {
+                    @Override
+                    public void onComplete(boolean status, Object data) {
+                        DialogBuilder.dismissProgressDialog();
+                            /*actualizeaza datele si reporneste cronometrul*/
+                        if (status) {
+                            currentDirections = (Directions) data;
+                            updateNavView(currentDirections.routes.get(0).formattedLegs.get(0).duration.text,
+                                    currentDirections.routes.get(0).formattedLegs.get(0).distance.text);
+                            countDownTimer.start();
+                        }
+                    }
+                });
+    }
+
+
 }

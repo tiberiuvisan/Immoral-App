@@ -47,11 +47,12 @@
                 android:background="@color/colorPrimary"
                 android:minHeight="30dp"
                 android:padding="10dp"
-                android:onClick="onClosestPin"
                 android:shadowColor="@android:color/white"
                 android:text="Cel mai apropiat punct"
 
                 />
+
+            <include layout="@layout/bottom_navigation_bar"/>
 
 
         </RelativeLayout>

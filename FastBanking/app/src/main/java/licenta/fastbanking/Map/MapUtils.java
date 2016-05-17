@@ -34,13 +34,13 @@ public class MapUtils {
 
     private static final String TAG = "MapUtils";
     private GoogleMap map;
-    private Context ctx;
+    private MainActivity ctx;
     private SharedPreferences sp;
     private ClusterManager<Bank> mClusterManager;
-    Polyline trackPolyline;
+    public Polyline trackPolyline;
 
 
-    public MapUtils(Context ctx, GoogleMap map) {
+    public MapUtils(MainActivity ctx, GoogleMap map) {
         this.ctx = ctx;
         this.map = map;
         sp = ctx.getSharedPreferences(Constants.SHARED_PREFS, Context.MODE_PRIVATE);
@@ -69,7 +69,7 @@ public class MapUtils {
         mClusterManager.setRenderer(new PinRenderer(ctx, map, mClusterManager));
         map.getUiSettings().setMyLocationButtonEnabled(true);
         map.getUiSettings().setMapToolbarEnabled(false);
-        map.getUiSettings().setZoomControlsEnabled(true);
+        map.getUiSettings().setZoomControlsEnabled(false);
         map.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
             @Override
             public void onCameraChange(CameraPosition cameraPosition) {
@@ -194,7 +194,6 @@ public class MapUtils {
 
 
         Log.d(TAG, "decoded poly: " + PolyUtil.decode(customPolyline));
-        //map.animateCamera(CameraUpdateFactory.newLatLngBounds(customPolyline.getLatLngBounds(), (int) convertDpToPixel(30, ctx)));
     }
 
     public void removeFromCluster(Bank bank) {
@@ -240,6 +239,7 @@ public class MapUtils {
 
     public void navigateTo(String polylinePoints, LatLngBounds latLngBounds) {
         addPolyline(polylinePoints);
+
         map.animateCamera(CameraUpdateFactory
                 .newLatLngBounds(latLngBounds, (int) convertDpToPixel(30, ctx)));
     }
@@ -248,19 +248,21 @@ public class MapUtils {
         DialogBuilder.createProgressDialog(ctx);
         NetworkUtils.getNetworkUtils(ctx).getDirections(getLastLocation(),
                 bank.getPosition(),
-                "walking",
+                ctx.getTransportMode(),
                 new OnCompleteListener() {
                     @Override
                     public void onComplete(boolean status, Object data) {
                         if (status) {
+                            ctx.navigateBankId = bank.id;
                             final Directions resultDirections = (Directions) data;
+                            ctx.currentDirections = resultDirections;
                             DialogBuilder.dismissProgressDialog();
                             DialogBuilder.DialogBankInfo(ctx, bank, resultDirections, new OnCompleteListener() {
                                 @Override
                                 public void onComplete(boolean status, Object data) {
-                                    addPolyline(resultDirections.routes.get(0).overview_polyline.points);
-                                    map.animateCamera(CameraUpdateFactory
-                                            .newLatLngBounds(resultDirections.routes.get(0).bounds.getLatLngBounds(), (int) convertDpToPixel(30, ctx)));
+                                    navigateTo(resultDirections.routes.get(0).overview_polyline.points, resultDirections.routes.get(0).bounds.getLatLngBounds());
+                                    ctx.enableNavViews();
+                                    ctx.countDownTimer.start();
                                 }
                             });
                         }

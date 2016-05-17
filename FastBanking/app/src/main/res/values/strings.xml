@@ -30,5 +30,9 @@
     <string name="btn_navigate">Navigheaza</string>
     <string name="no">NO</string>
     <string name="yes">YES</string>
+    <string name="aproximate_time_remaining">Timp aproximativ ramas: %s</string>
+    <string name="remaining_distance">Distanta ramasa: %s</string>
+    <string name="update_info">Actualizare informatii in: %s sec</string>
+    <string name="stop_navigation">Opreste navigarea</string>
 
 </resources>

@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
+import android.util.Log;
 import android.util.SparseArray;
 import android.webkit.MimeTypeMap;
 import java.io.BufferedReader;
@@ -74,6 +75,7 @@ public final class YoutubeExtractor {
 
         final String link = String.format("https://www.youtube.com/get_video_info?video_id=%s%s&ps=default&eurl=&gl=US&hl=%s", mVideoIdentifier, elField, language);
 
+        Log.d("Extractor", "Link: " + link);
         final HandlerThread youtubeExtractorThread = new HandlerThread("YouTubeExtractorThread", THREAD_PRIORITY_BACKGROUND);
         youtubeExtractorThread.start();
 
