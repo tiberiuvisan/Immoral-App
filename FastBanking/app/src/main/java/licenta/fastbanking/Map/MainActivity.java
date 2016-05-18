@@ -25,6 +25,7 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -441,20 +442,26 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         DialogBuilder.disableOkButton(dialog);
-                        String bankName = bank_name.getText().toString();
+                        String bankName="";
                         int countersNumber = 0;
                         int waitingTime = 0;
                         int totalPeople = 0;
 
-                        if (!counters_number.getText().toString().equals("")) {
+                        if (!bank_name.getText().toString().trim().equals("") &&
+                                !counters_number.getText().toString().trim().equals("") &&
+                                !waiting_time.getText().toString().trim().equals("") &&
+                                !total_people.getText().toString().trim().equals("")) {
+                            bankName = bank_name.getText().toString();
                             countersNumber = Integer.parseInt(counters_number.getText().toString());
-                        }
-                        if (!waiting_time.getText().toString().equals("")) {
                             waitingTime = Integer.parseInt(waiting_time.getText().toString());
-                        }
-                        if (!total_people.getText().toString().equals("")) {
                             totalPeople = Integer.parseInt(total_people.getText().toString());
+
+
+
+                        } else{
+                            Toast.makeText(MainActivity.this, getResources().getString(R.string.register_error), Toast.LENGTH_SHORT).show();
                         }
+
                         BankDbHelper.addBankToDatabase(MainActivity.this, bankName, countersNumber, waitingTime, totalPeople, latLng.latitude, latLng.longitude);
                         bank.lat = latLng.latitude;
                         bank.lng = latLng.longitude;
