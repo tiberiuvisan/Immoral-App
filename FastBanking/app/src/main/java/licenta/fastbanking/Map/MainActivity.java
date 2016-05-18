@@ -103,13 +103,15 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onFinish() {
-            int max = banks.size() - 1;
-            Random peopleRandom = new Random();
-            int randomID = peopleRandom.nextInt(max);
-            banks.get(randomID).totalPeople++;
-            Log.d("TIMER", "Added people to bank with id: " + randomID);
+            if (banks != null && banks.size() > 0) {
+                int max = banks.size() - 1;
+                Random peopleRandom = new Random();
+                int randomID = peopleRandom.nextInt(max);
+                banks.get(randomID).totalPeople++;
+                Log.d("TIMER", "Added people to bank with id: " + randomID);
 
-            addPeopleCDT.start();
+                addPeopleCDT.start();
+            }
 
         }
     };
@@ -122,16 +124,17 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onFinish() {
+            if (banks.size() > 0 && banks != null) {
+                for (Bank bank : banks) {
+                    bank.totalPeople = bank.totalPeople - bank.countersNumber;
+                    if (bank.totalPeople < 0)
+                        bank.totalPeople = 0;
 
-            for (Bank bank : banks) {
-                bank.totalPeople = bank.totalPeople - bank.countersNumber;
-                if (bank.totalPeople < 0)
-                    bank.totalPeople = 0;
-
-                Log.d("TIMER", "Removed " + bank.countersNumber + " from bank with id: " + bank.id);
-                Log.d("TIMER", "People remaining: " + bank.totalPeople);
+                    Log.d("TIMER", "Removed " + bank.countersNumber + " from bank with id: " + bank.id);
+                    Log.d("TIMER", "People remaining: " + bank.totalPeople);
+                }
+                removePeopleCDT.start();
             }
-            removePeopleCDT.start();
         }
     };
 
@@ -142,10 +145,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         sp = getSharedPreferences(Constants.SHARED_PREFS, Context.MODE_PRIVATE);
         getCurrentUser();
-        banks = BankDbHelper.getBanksFromDatabase(this);
-        for (Bank bank : banks) {
-            bank.id--;
-        }
+        initBanks();
         initialiseUI();
         setupMapIfNeeded();
 
@@ -157,12 +157,19 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void initBanks() {
+        banks = BankDbHelper.getBanksFromDatabase(this);
+        for (Bank bank : banks) {
+            bank.id--;
+        }
+    }
+
 
     private void getCurrentUser() {
         currentUser = new CurrentUser();
 
         currentUser.username = UserDbHelper.getUser(this, SessionManager.getInstance().getId());
-        currentUser.admin = UserDbHelper.checkAdmin(this, UserDbHelper.getId(this,currentUser.username));
+        currentUser.admin = UserDbHelper.checkAdmin(this, UserDbHelper.getId(this, currentUser.username));
 
         Log.d(TAG, "Current user: " + currentUser.toString());
 
@@ -226,7 +233,7 @@ public class MainActivity extends AppCompatActivity {
         /*Elementele din drawer*/
         headerUsername = (TextView) findViewById(R.id.header_username);
         headerIsAdmin = (TextView) findViewById(R.id.header_admin);
-        logout = (TextView)findViewById(R.id.logout);
+        logout = (TextView) findViewById(R.id.logout);
 
         setHeaderValues();
 
@@ -449,13 +456,20 @@ public class MainActivity extends AppCompatActivity {
                             totalPeople = Integer.parseInt(total_people.getText().toString());
                         }
                         BankDbHelper.addBankToDatabase(MainActivity.this, bankName, countersNumber, waitingTime, totalPeople, latLng.latitude, latLng.longitude);
-
                         bank.lat = latLng.latitude;
                         bank.lng = latLng.longitude;
                         bank.name = bankName;
                         bank.countersNumber = countersNumber;
                         bank.waitTime = waitingTime;
                         bank.totalPeople = totalPeople;
+
+                        banks = new ArrayList<Bank>();
+                        initBanks();
+                        Log.d(TAG, "Banks: " + banks.toString());
+                        if (banks.size() == 1) {
+                            addPeopleCDT.start();
+                            removePeopleCDT.start();
+                        }
                         mapUtils.addToCluster(bank);
                         mapUtils.recluster();
                         dialog.dismiss();
@@ -507,8 +521,12 @@ public class MainActivity extends AppCompatActivity {
         }
         Bank closestBank = banks.get(0);
         for (int i = 0; i < banks.size(); i++) {
+            Log.d(TAG, "closest bank distance: " + closestBank.distance);
+            Log.d(TAG, "current bank distance: " + banks.get(i).distance);
+
             if (banks.get(i).distance < closestBank.distance) {
                 closestBankPosition = i;
+                Log.d(TAG, "current bank smaller distance: true");
             }
 
         }
