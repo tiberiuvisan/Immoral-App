@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
     private Button btnClosestPin;
+    private Button btnFastestPin;
     private LinearLayout bottomBar;
     private Button btnStopNavigation;
     private TextView timeRemaining;
@@ -252,6 +253,7 @@ public class MainActivity extends AppCompatActivity {
         /*elementele din bara de jos*/
 
         btnClosestPin = (Button) findViewById(R.id.btn_closest_pin);
+        btnFastestPin = (Button) findViewById(R.id.btn_fastest_pin);
 
         bottomBar = (LinearLayout) findViewById(R.id.nav_bar);
         btnStopNavigation = (Button) findViewById(R.id.btn_stop_navigation);
@@ -266,6 +268,17 @@ public class MainActivity extends AppCompatActivity {
                     if (banks.size() != 0) {
                         mapUtils.createDialogForNavigation(banks.get(getClosestBankPosition(banks)));
 
+                    }
+                }
+            }
+        });
+
+        btnFastestPin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(banks !=null){
+                    if(banks.size() !=0){
+                        mapUtils.createDialogForNavigation(banks.get(getFastestBank(banks)));
                     }
                 }
             }
@@ -540,6 +553,27 @@ public class MainActivity extends AppCompatActivity {
 
         }
         return closestBankPosition;
+    }
+
+    public int getFastestBank(ArrayList<Bank>banks){
+        int fastestBankPosition = 0;
+        if (banks.size() == 0) {
+            return -1;
+        }
+        Bank fastestBank = banks.get(0);
+        for (int i = 0; i < banks.size(); i++) {
+            Log.d(TAG, "fastest bank time: " + fastestBank.calculateWaitTime());
+            Log.d(TAG, "current bank time: " + banks.get(i).calculateWaitTime());
+
+            if (banks.get(i).calculateWaitTime() < fastestBank.calculateWaitTime()) {
+                fastestBankPosition = i;
+                fastestBank = banks.get(i);
+                Log.d(TAG, "current bank smaller time: true");
+            }
+
+        }
+        return fastestBankPosition;
+
     }
 
 
