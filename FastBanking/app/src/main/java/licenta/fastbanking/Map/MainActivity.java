@@ -455,6 +455,25 @@ public class MainActivity extends AppCompatActivity {
                             countersNumber = Integer.parseInt(counters_number.getText().toString());
                             waitingTime = Integer.parseInt(waiting_time.getText().toString());
                             totalPeople = Integer.parseInt(total_people.getText().toString());
+                            BankDbHelper.addBankToDatabase(MainActivity.this, bankName, countersNumber, waitingTime, totalPeople, latLng.latitude, latLng.longitude);
+                            bank.lat = latLng.latitude;
+                            bank.lng = latLng.longitude;
+                            bank.name = bankName;
+                            bank.countersNumber = countersNumber;
+                            bank.waitTime = waitingTime;
+                            bank.totalPeople = totalPeople;
+
+                            banks = new ArrayList<Bank>();
+                            initBanks();
+                            calculateDistanceForAllBanks(banks);
+                            Log.d(TAG, "Banks: " + banks.toString());
+                            if (banks.size() == 1) {
+                                addPeopleCDT.start();
+                                removePeopleCDT.start();
+                            }
+                            mapUtils.addToCluster(bank);
+                            mapUtils.recluster();
+                            dialog.dismiss();
 
 
 
@@ -462,24 +481,6 @@ public class MainActivity extends AppCompatActivity {
                             Toast.makeText(MainActivity.this, getResources().getString(R.string.register_error), Toast.LENGTH_SHORT).show();
                         }
 
-                        BankDbHelper.addBankToDatabase(MainActivity.this, bankName, countersNumber, waitingTime, totalPeople, latLng.latitude, latLng.longitude);
-                        bank.lat = latLng.latitude;
-                        bank.lng = latLng.longitude;
-                        bank.name = bankName;
-                        bank.countersNumber = countersNumber;
-                        bank.waitTime = waitingTime;
-                        bank.totalPeople = totalPeople;
-
-                        banks = new ArrayList<Bank>();
-                        initBanks();
-                        Log.d(TAG, "Banks: " + banks.toString());
-                        if (banks.size() == 1) {
-                            addPeopleCDT.start();
-                            removePeopleCDT.start();
-                        }
-                        mapUtils.addToCluster(bank);
-                        mapUtils.recluster();
-                        dialog.dismiss();
                     }
                 }).setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {
             @Override
@@ -533,6 +534,7 @@ public class MainActivity extends AppCompatActivity {
 
             if (banks.get(i).distance < closestBank.distance) {
                 closestBankPosition = i;
+                closestBank = banks.get(i);
                 Log.d(TAG, "current bank smaller distance: true");
             }
 
