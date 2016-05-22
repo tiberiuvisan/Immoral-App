@@ -9,7 +9,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import licenta.fastbanking.R;
@@ -65,7 +64,10 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void registerUser() {
 
-        if (user.getText().toString().length() > 0 && password.getText().toString().length() > 0) {
+        if (user.getText().toString().length() > 0
+                && password.getText().toString().length() > 0
+                && !user.getText().toString().trim().equals("")
+                && !password.getText().toString().trim().equals("")) {
 
             UserDbHelper.addUserToDatabase(this, user.getText().toString(), password.getText().toString(), phone.getText().toString(), isAdmin.isChecked());
             Toast.makeText(this, R.string.register_success, Toast.LENGTH_SHORT).show();
@@ -78,6 +80,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void startLoginActivity() {
         Intent i = new Intent(RegisterActivity.this, LoginActivity.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(i);
         RegisterActivity.this.finish();
 

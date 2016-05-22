@@ -69,6 +69,7 @@ public class LoginActivity extends AppCompatActivity {
                 ActivityOptionsCompat options = ActivityOptionsCompat.
                         makeSceneTransitionAnimation(LoginActivity.this, title, "logo");
                 ActivityCompat.startActivity(LoginActivity.this, i, options.toBundle());
+
             }
         });
     }
@@ -80,7 +81,7 @@ public class LoginActivity extends AppCompatActivity {
             Intent i = new Intent(LoginActivity.this, MainActivity.class);
             i.putExtra("username",username.getText().toString().trim());
             startActivity(i);
-            this.finish();
+            LoginActivity.this.finish();
         } else {
             Toast.makeText(this, R.string.login_error, Toast.LENGTH_SHORT).show();
         }

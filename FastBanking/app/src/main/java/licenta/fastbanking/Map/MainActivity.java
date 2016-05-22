@@ -25,6 +25,7 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -74,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
     private Button btnClosestPin;
+    private Button btnFastestPin;
     private LinearLayout bottomBar;
     private Button btnStopNavigation;
     private TextView timeRemaining;
@@ -251,6 +253,7 @@ public class MainActivity extends AppCompatActivity {
         /*elementele din bara de jos*/
 
         btnClosestPin = (Button) findViewById(R.id.btn_closest_pin);
+        btnFastestPin = (Button) findViewById(R.id.btn_fastest_pin);
 
         bottomBar = (LinearLayout) findViewById(R.id.nav_bar);
         btnStopNavigation = (Button) findViewById(R.id.btn_stop_navigation);
@@ -265,6 +268,17 @@ public class MainActivity extends AppCompatActivity {
                     if (banks.size() != 0) {
                         mapUtils.createDialogForNavigation(banks.get(getClosestBankPosition(banks)));
 
+                    }
+                }
+            }
+        });
+
+        btnFastestPin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(banks !=null){
+                    if(banks.size() !=0){
+                        mapUtils.createDialogForNavigation(banks.get(getFastestBank(banks)));
                     }
                 }
             }
@@ -441,38 +455,45 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         DialogBuilder.disableOkButton(dialog);
-                        String bankName = bank_name.getText().toString();
+                        String bankName="";
                         int countersNumber = 0;
                         int waitingTime = 0;
                         int totalPeople = 0;
 
-                        if (!counters_number.getText().toString().equals("")) {
+                        if (!bank_name.getText().toString().trim().equals("") &&
+                                !counters_number.getText().toString().trim().equals("") &&
+                                !waiting_time.getText().toString().trim().equals("") &&
+                                !total_people.getText().toString().trim().equals("")) {
+                            bankName = bank_name.getText().toString();
                             countersNumber = Integer.parseInt(counters_number.getText().toString());
-                        }
-                        if (!waiting_time.getText().toString().equals("")) {
                             waitingTime = Integer.parseInt(waiting_time.getText().toString());
-                        }
-                        if (!total_people.getText().toString().equals("")) {
                             totalPeople = Integer.parseInt(total_people.getText().toString());
-                        }
-                        BankDbHelper.addBankToDatabase(MainActivity.this, bankName, countersNumber, waitingTime, totalPeople, latLng.latitude, latLng.longitude);
-                        bank.lat = latLng.latitude;
-                        bank.lng = latLng.longitude;
-                        bank.name = bankName;
-                        bank.countersNumber = countersNumber;
-                        bank.waitTime = waitingTime;
-                        bank.totalPeople = totalPeople;
+                            BankDbHelper.addBankToDatabase(MainActivity.this, bankName, countersNumber, waitingTime, totalPeople, latLng.latitude, latLng.longitude);
+                            bank.lat = latLng.latitude;
+                            bank.lng = latLng.longitude;
+                            bank.name = bankName;
+                            bank.countersNumber = countersNumber;
+                            bank.waitTime = waitingTime;
+                            bank.totalPeople = totalPeople;
 
-                        banks = new ArrayList<Bank>();
-                        initBanks();
-                        Log.d(TAG, "Banks: " + banks.toString());
-                        if (banks.size() == 1) {
-                            addPeopleCDT.start();
-                            removePeopleCDT.start();
+                            banks = new ArrayList<Bank>();
+                            initBanks();
+                            calculateDistanceForAllBanks(banks);
+                            Log.d(TAG, "Banks: " + banks.toString());
+                            if (banks.size() == 1) {
+                                addPeopleCDT.start();
+                                removePeopleCDT.start();
+                            }
+                            mapUtils.addToCluster(bank);
+                            mapUtils.recluster();
+                            dialog.dismiss();
+
+
+
+                        } else{
+                            Toast.makeText(MainActivity.this, getResources().getString(R.string.register_error), Toast.LENGTH_SHORT).show();
                         }
-                        mapUtils.addToCluster(bank);
-                        mapUtils.recluster();
-                        dialog.dismiss();
+
                     }
                 }).setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {
             @Override
@@ -526,11 +547,33 @@ public class MainActivity extends AppCompatActivity {
 
             if (banks.get(i).distance < closestBank.distance) {
                 closestBankPosition = i;
+                closestBank = banks.get(i);
                 Log.d(TAG, "current bank smaller distance: true");
             }
 
         }
         return closestBankPosition;
+    }
+
+    public int getFastestBank(ArrayList<Bank>banks){
+        int fastestBankPosition = 0;
+        if (banks.size() == 0) {
+            return -1;
+        }
+        Bank fastestBank = banks.get(0);
+        for (int i = 0; i < banks.size(); i++) {
+            Log.d(TAG, "fastest bank time: " + fastestBank.calculateWaitTime());
+            Log.d(TAG, "current bank time: " + banks.get(i).calculateWaitTime());
+
+            if (banks.get(i).calculateWaitTime() < fastestBank.calculateWaitTime()) {
+                fastestBankPosition = i;
+                fastestBank = banks.get(i);
+                Log.d(TAG, "current bank smaller time: true");
+            }
+
+        }
+        return fastestBankPosition;
+
     }
 
 

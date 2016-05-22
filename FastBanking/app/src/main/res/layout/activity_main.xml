@@ -39,18 +39,37 @@
 
             <Button
                 android:id="@+id/btn_closest_pin"
-                android:layout_width="200dp"
+                android:layout_width="150dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
+                android:layout_alignParentRight="true"
                 android:layout_marginBottom="20dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginLeft="5dp"
                 android:background="@color/colorPrimary"
                 android:minHeight="30dp"
                 android:padding="10dp"
                 android:shadowColor="@android:color/white"
-                android:text="Cel mai apropiat punct"
+                android:text="Cel mai apropiat"
 
                 />
+            <Button
+                android:id="@+id/btn_fastest_pin"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:layout_marginBottom="20dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="5dp"
+                android:background="@color/colorPrimary"
+                android:minHeight="30dp"
+                android:padding="10dp"
+                android:shadowColor="@android:color/white"
+                android:text="Cel mai rapid"
+
+                />
+
 
             <include layout="@layout/bottom_navigation_bar"/>
 
