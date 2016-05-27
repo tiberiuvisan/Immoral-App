@@ -317,6 +317,7 @@ public class MainActivity extends AppCompatActivity {
     public void enableNavViews() {
         isNavigating = true;
         btnClosestPin.setVisibility(View.GONE);
+        btnFastestPin.setVisibility(View.GONE);
         bottomBar.setVisibility(View.VISIBLE);
         updateNavView(currentDirections.routes.get(0).formattedLegs.get(0).duration.text,
                 currentDirections.routes.get(0).formattedLegs.get(0).distance.text);
@@ -328,6 +329,7 @@ public class MainActivity extends AppCompatActivity {
         }
         isNavigating = false;
         btnClosestPin.setVisibility(View.VISIBLE);
+        btnFastestPin.setVisibility(View.VISIBLE);
         bottomBar.setVisibility(View.GONE);
     }
 
